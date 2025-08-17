@@ -1,2 +1,43 @@
-<h1>Timers#show</h1>
-<p>Find me in app/views/timers/show.html.erb</p>
+<h1>ポモドーロタイマー</h1>
+
+<input id="hours" type="text" value="0">時間
+<input id="minutes" type="text" value="0">分
+<input id="seconds" type="text" value="0">秒
+
+<div id="timer">00:00:00</div>
+<button id="start-button">スタート</button>
+
+<script>
+  const startButton = document.getElementById("start-button");
+  const timerDisplay = document.getElementById("timer");
+  
+  
+
+  startButton.addEventListener("click", () => {
+    let hours = parseInt(document.getElementById("hours").value);
+    let minutes = parseInt(document.getElementById("minutes").value);
+    let seconds = parseInt(document.getElementById("seconds").value);
+    let timeLeft = (hours * 3600) + (minutes * 60) + seconds
+    
+    const updateDisplay = () => {
+      const h = Math.floor(timeLeft / 3600);
+      const m = Math.floor((timeLeft % 3600) / 60);
+      const s = timeLeft % 60;
+      timerDisplay.textContent = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    }
+
+    const countDown = () => {
+      timeLeft -= 1;
+      updateDisplay();
+
+      if (timeLeft == 0) {
+        clearInterval(interval);
+        alert("タイマーが終了しました");
+      }
+    }
+
+    // 1秒ごとにタイマー表示をカウントダウン
+    updateDisplay();
+    const interval = setInterval(countDown, 1000);
+  });
+</script>
