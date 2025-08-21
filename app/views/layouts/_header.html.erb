@@ -1,0 +1,16 @@
+<header>
+  <h1>
+    <%= link_to 'Daylog', root_path %>
+  </h1>
+  <% if user_signed_in? %>
+    <nav>
+      <%= link_to 'タイマー', timer_path %>
+      <%= link_to 'ログ一覧', "#" %>
+    </nav>
+    <div>
+      <%= link_to 'アカウント設定', edit_user_registration_path %>
+      <%= link_to 'ログアウト', destroy_user_session_path, data: {turbo_method: :delete} %>
+    </div>
+  <% end %>
+  <hr>
+</header>

@@ -23,6 +23,9 @@
   </head>
 
   <body>
+    <% unless current_page?(root_path) %>
+      <%= render "layouts/header" %>
+    <% end %>
     <%= yield %>
   </body>
 </html>
