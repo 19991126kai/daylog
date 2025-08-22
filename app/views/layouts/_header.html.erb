@@ -1,4 +1,4 @@
-<header class="text-white body-font bg-blue-900">
+<header class="text-white body-font bg-blue-900 shadow">
   <div class="container mx-auto flex p-5">
     <%= link_to "Daylog", root_path, class: "font-medium text-xl" %>
     <nav class="mr-auto ml-5 py-1 pl-4 border-l border-white">
@@ -16,7 +16,7 @@
         <path d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" fill-rule="evenodd" />
       </svg>
       <%# ドロップダウンメニュー %>
-      <div class="absolute top-10 right-0 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 hidden group-hover:block z-10">
+      <div class="absolute top-10 right-0 min-w-40 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 hidden group-hover:block z-10">
         <div class="px-4 py-3 text-sm border-b text-gray-500">
           <% if user_signed_in? %>
             <div>
