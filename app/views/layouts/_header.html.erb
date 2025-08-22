@@ -1,9 +1,9 @@
-<header class="text-white body-font bg-blue-900 shadow">
-  <div class="container mx-auto flex p-5">
-    <%= link_to "Daylog", root_path, class: "font-medium text-xl" %>
+<header class="sticky top-0 z-999 text-white body-font bg-blue-900 shadow">
+  <div class="container mx-auto flex p-4 items-center">
+    <%= link_to "Daylog", root_path, class: "font-medium text-2xl" %>
 
     <% if current_user %>
-      <nav class="mr-auto ml-5 py-1 pl-4 border-l border-white">
+      <nav class="mr-auto ml-5 pl-5 border-l border-white">
         <%= link_to "タイマー", timer_path, class: "mr-5 hover:text-gray-300" %>
         <%= link_to "カテゴリ設定", "#", class: "mr-5 hover:text-gray-300" %>
         <%= link_to "ログ一覧", "#", class: "mr-5 hover:text-gray-300" %>

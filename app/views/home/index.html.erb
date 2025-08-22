@@ -1,10 +1,40 @@
-<div class="container">
-  <h1 class="text-3xl font-bold underline">
-    Daylog
-  </h1>
-  <% unless user_signed_in? %>
-    <%= link_to "ログイン", new_user_session_path %>
-    <%= link_to "新規登録", new_user_registration_path %>
-    <%= link_to "ゲストログイン", "#" %>
-  <% end %>
-</div>
+<section class="bg-blue-900 text-white h-screen flex flex-col">
+  <div class="container mx-auto flex-grow flex items-center justify-center px-4">
+
+    <div class="max-w-6xl w-full grid grid-cols-2 gap-10 items-center">
+      
+      <div class="text-left">
+        <h1 class="text-6xl font-bold mb-6 leading-tight">
+          学習の習慣を、<br/>
+          記録とともに
+        </h1>
+        <p class="text-xl mb-8">
+          Daylogは、毎日の学習時間を自動で記録し、<br/>
+          SNS共有できる学習ログアプリです。
+        </p>
+
+        <div class="flex gap-4">
+          <%= link_to new_user_session_path, class: "bg-white text-blue-900 font-semibold py-2 px-6 rounded hover:bg-gray-200 transition inline-flex items-center justify-center gap-2" do %>
+            <span class="material-symbols-outlined">login</span>
+            ログイン
+          <% end %>
+
+          <%= link_to new_user_registration_path, class: "bg-gray-100 text-blue-900 font-semibold py-2 px-6 rounded hover:bg-gray-300 transition inline-flex items-center justify-center gap-2" do %>
+            <span class="material-symbols-outlined">person_add</span>
+            新規登録
+          <% end %>
+
+          <%= link_to timer_path, class: "border border-white text-white font-semibold py-2 px-6 rounded hover:bg-white hover:text-blue-900 transition inline-flex items-center justify-center gap-2" do %>
+            <span class="material-symbols-outlined">play_circle</span>
+            ゲストログイン
+          <% end %>
+        </div>
+      </div>
+
+      <div class="flex justify-center">
+        <%= image_tag("https://bootstrapmade.com/demo/templates/FlexStart/assets/img/hero-img.png", class: "rounded-lg w-full max-w-md") %>
+      </div>
+
+    </div>
+  </div>
+</section>
