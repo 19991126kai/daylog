@@ -1,0 +1,9 @@
+<div class="flex mb-6 border-b border-gray-200">
+  <% if current_page?(new_user_registration_path) %>
+    <%= link_to "ログイン", new_user_session_path, class: "w-1/2 text-center py-2 font-semibold text-gray-500 hover:text-blue-800" %>
+    <%= link_to "新規登録", new_user_registration_path, class: "w-1/2 text-center py-2 font-semibold text-blue-900 border-b-2 border-blue-900" %>
+  <% else %>
+    <%= link_to "ログイン", new_user_session_path, class: "w-1/2 text-center py-2 font-semibold text-blue-900 border-b-2 border-blue-900" %>
+    <%= link_to "新規登録", new_user_registration_path, class: "w-1/2 text-center py-2 font-semibold text-gray-500 hover:text-blue-800" %>
+  <% end %>
+</div>
