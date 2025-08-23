@@ -1,0 +1,32 @@
+<section class="bg-gray-100 min-h-screen py-12 px-4">
+  <div class="max-w-5xl mx-auto bg-white p-8 rounded shadow-md">
+    <h2 class="text-3xl font-bold mb-6 text-blue-900 flex items-center gap-2">
+      <span class="material-symbols-outlined">category</span>
+      カテゴリ一覧
+    </h2>
+
+    <% if @categories.present? %>
+      <ul class="space-y-4">
+        <% @categories.each do |category| %>
+          <li class="border-b pb-4">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-xl font-semibold text-gray-800"><%= category.name %></p>
+              </div>
+              <div class="flex gap-2">
+                <%= link_to "編集", "#", class: "text-blue-600 hover:underline" %>
+                <%= link_to "削除", "#", data: { turbo_method: :delete, turbo_confirm: "本当に削除しますか？" }, class: "text-red-600 hover:underline" %>
+              </div>
+            </div>
+          </li>
+        <% end %>
+      </ul>
+    <% else %>
+      <p class="text-gray-600">カテゴリがまだ登録されていません。</p>
+    <% end %>
+
+    <div class="mt-8">
+      <%= link_to "カテゴリを追加", "#", class: "bg-blue-900 text-white py-2 px-4 rounded hover:bg-blue-800 transition" %>
+    </div>
+  </div>
+</section>

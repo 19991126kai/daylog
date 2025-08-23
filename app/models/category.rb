@@ -3,4 +3,6 @@ class Category < ApplicationRecord
     validates :user_id
     validates :name
   end
+
+  belongs_to :user
 end
