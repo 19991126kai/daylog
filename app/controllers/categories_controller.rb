@@ -9,12 +9,25 @@ class CategoriesController < ApplicationController
     @category = Category.new
   end
 
+  def edit
+    @category = current_user.categories.find(params[:id])
+  end
+
+  def update
+    @category = current_user.categories.find(params[:id])
+    if @category.update(category_params)
+      redirect_to categories_path
+    else
+      render :edit, status: :unprocessable_entity
+    end
+  end
+
   def create
     @category = current_user.categories.build(category_params)
     if @category.save
       redirect_to categories_path
     else
-      render :new
+      render :new, status: :unprocessable_entity
     end
   end
 
