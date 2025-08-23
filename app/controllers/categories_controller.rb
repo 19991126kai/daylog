@@ -1,4 +1,6 @@
 class CategoriesController < ApplicationController
+  before_action :authenticate_user!
+
   def index
     @categories = current_user.categories.order(:created_at)
   end
@@ -17,7 +19,7 @@ class CategoriesController < ApplicationController
   end
 
   def destroy
-    category = current_user.categories.find(params[:id])
+    category = current_user.categories.find(params[:id]) # current_userにしておくと人のやつ勝手に消せなくなる
     category.destroy
     redirect_to categories_path
   end
