@@ -2,7 +2,10 @@ class LogsController < ApplicationController
   before_action :authenticate_user!
 
   def index
-    @logs = current_user.logs.preload(:category).order(start_time: :desc) # N+1問題の対策でカテゴリまでpreload。
+    @logs = current_user.logs
+                        .preload(:category) # N+1問題の対策でカテゴリまでpreload
+                        .order(start_time: :desc)
+                        .page(params[:page]).per(10) # ページネーション
   end
 
   def new
