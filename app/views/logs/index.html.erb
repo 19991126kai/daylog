@@ -1,7 +1,6 @@
 <section class="py-12 px-4 max-w-7xl mx-auto">
   <div class="bg-white p-8 rounded shadow-md">
     <h2 class="text-3xl font-bold text-blue-900 mb-8 border-b pb-2">学習ログ一覧</h2>
-
     <% if @logs.present? %>
       <div class="overflow-x-auto">
         <table class="min-w-full table-auto border-collapse">
@@ -15,7 +14,6 @@
               <th class="px-4 py-3 border-b text-right">編集・削除</th>
             </tr>
           </thead>
-
           <tbody class="text-gray-800">
             <% @logs.each do |log| %>
               <tr class="hover:bg-gray-50">
@@ -37,7 +35,6 @@
                     <%= link_to "#", class: "inline-flex items-center px-3 py-1 text-sm font-medium text-white bg-blue-600 rounded hover:bg-blue-700 transition" do %>
                       <span class="material-symbols-outlined mr-1 text-sm">edit</span> 編集
                     <% end %>
-
                     <%= link_to "#", class: "inline-flex items-center px-3 py-1 text-sm font-medium text-white bg-red-600 rounded hover:bg-red-700 transition" do %>
                       <span class="material-symbols-outlined mr-1 text-sm">delete</span> 削除
                     <% end %>
@@ -51,7 +48,6 @@
     <% else %>
       <p class="text-gray-600">学習ログがまだ登録されていません。</p>
     <% end %>
-
     <div class="mt-8 text-left">
       <%= link_to new_log_path, class: "bg-blue-900 text-white py-2 px-6 rounded hover:bg-blue-800 transition inline-flex items-center gap-2" do %>
         <span class="material-symbols-outlined">add</span>

@@ -13,7 +13,6 @@ class LogsController < ApplicationController
     )
   end
 
-
   def create
     @log = current_user.logs.build(log_params)
     if @log.save
