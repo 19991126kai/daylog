@@ -11,7 +11,7 @@
               <th class="px-4 py-3 border-b">カテゴリ</th>
               <th class="px-4 py-3 border-b">開始</th>
               <th class="px-4 py-3 border-b">終了</th>
-              <th class="px-4 py-3 border-b">学習時間（分）</th>
+              <th class="px-4 py-3 border-b">学習時間</th>
               <th class="px-4 py-3 border-b text-right">編集・削除</th>
             </tr>
           </thead>
@@ -28,7 +28,9 @@
                   <%= log.end_time.in_time_zone.strftime("%H:%M") || "-" %>
                 </td>
                 <td class="px-4 py-3 border-b">
-                  <%= log.duration || "-" %>
+                  <% hours = log.duration / 60 %>
+                  <% minutes = log.duration % 60 %>
+                  <%= "#{hours}時間#{minutes}分" %>
                 </td>
                 <td class="px-4 py-3 border-b">
                   <div class="flex justify-end gap-2">
@@ -51,7 +53,7 @@
     <% end %>
 
     <div class="mt-8 text-right">
-      <%= link_to "#", class: "bg-blue-900 text-white py-2 px-6 rounded hover:bg-blue-800 transition inline-flex items-center gap-2" do %>
+      <%= link_to new_log_path, class: "bg-blue-900 text-white py-2 px-6 rounded hover:bg-blue-800 transition inline-flex items-center gap-2" do %>
         <span class="material-symbols-outlined">add</span>
         新しいログを追加
       <% end %>
