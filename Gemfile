@@ -40,8 +40,11 @@ gem "thruster", require: false
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 # gem "image_processing", "~> 1.2"
 
-# 自分で追加したgem
+# 認証機能
 gem "devise"
+
+# ページネーション
+gem "kaminari"
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
@@ -57,6 +60,12 @@ end
 group :development do
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem "web-console"
+
+  # erbのフォーマッタ
+  gem "htmlbeautifier"
+
+  # N+1問題が発生したらアラートしてくれる
+  gem "bullet"
 end
 
 group :test do
