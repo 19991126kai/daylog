@@ -60,6 +60,9 @@ group :development do
 
   # erbのフォーマッタ
   gem "htmlbeautifier"
+
+  # N+1問題が発生したらアラートしてくれる
+  gem "bullet"
 end
 
 group :test do
