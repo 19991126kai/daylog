@@ -25,6 +25,20 @@ class LogsController < ApplicationController
     end
   end
 
+  def edit
+    @log = current_user.logs.find(params[:id])
+    @categories = Category.order(:name)
+  end
+
+  def update
+    @log = current_user.logs.find(params[:id])
+    if @log.update(log_params)
+      redirect_to logs_path
+    else
+      render :edit, status: :unprocessable_entity
+    end
+  end
+
   private
 
   def log_params
