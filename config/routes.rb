@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
   devise_for :users
-  get "/timer", to: "timers#show"
+  resource :timer, only: [ :show ]
   resources :categories, except: [ :show ]
   resources :logs, except: [ :show ]
 
