@@ -10,13 +10,23 @@
               id: "log-category" %>
       </div>
     <% end %>
+    <div id="mode-tabs" class="flex w-1/2 mx-auto mb-6 border-b border-gray-200 select-none">
+      <div data-mode="study"
+           class="tab-btn w-1/2 text-center py-2 font-semibold text-blue-900 border-b-2 border-blue-900 cursor-pointer">
+        学習
+      </div>
+      <div data-mode="break"
+           class="tab-btn w-1/2 text-center py-2 font-semibold text-gray-500 hover:text-blue-800 cursor-pointer">
+        休憩
+      </div>
+    </div>
     <div id="timer" class="flex flex-col items-center gap-8">
       <%# タイマー秒数表示 %>
       <div class="font-bold tabular-nums tracking-wider text-9xl my-10">
         <span id="timer-display">25:00</span>
       </div>
       <%# タイマー操作ボタン %>
-      <div class="flex items-center gap-4">
+      <div class="flex items-center gap-4 mb-5">
         <button id="btn-start"
                 class="bg-blue-900 text-white font-semibold py-3 px-8 rounded hover:bg-blue-800 transition">
           開始
