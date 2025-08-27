@@ -10,13 +10,11 @@
               id: "log-category" %>
       </div>
     <% end %>
-    <div id="mode-tabs" class="flex w-1/2 mx-auto mb-6 border-b border-gray-200 select-none">
-      <div data-mode="study"
-           class="tab-btn w-1/2 text-center py-2 font-semibold text-blue-900 border-b-2 border-blue-900 cursor-pointer">
+    <div class="flex w-1/2 mx-auto mb-6 border-b border-gray-200 select-none">
+      <div id="work-tab" class="active w-1/2 text-center py-2 font-semibold text-blue-900 border-b-2 border-blue-900 cursor-pointer">
         学習
       </div>
-      <div data-mode="break"
-           class="tab-btn w-1/2 text-center py-2 font-semibold text-gray-500 hover:text-blue-800 cursor-pointer">
+      <div id="break-tab" class="w-1/2 text-center py-2 font-semibold text-gray-500 hover:text-blue-800 cursor-pointer">
         休憩
       </div>
     </div>
@@ -43,3 +41,35 @@
     </div>
   </div>
 </section>
+<script>
+  const workTab = document.getElementById("work-tab");
+  const breakTab = document.getElementById("break-tab");
+  const timerDisplay = document.getElementById("timer-display");
+
+  const activeClassArr   = ["active", "text-blue-900", "border-b-2", "border-blue-900"];
+  const inactiveClassArr = ["text-gray-500", "hover:text-blue-800"];
+
+  const setActiveTab = (activeEl, inactiveEl) => {
+    activeEl.classList.remove(...inactiveClassArr);
+    activeEl.classList.add(...activeClassArr);
+
+    inactiveEl.classList.remove(...activeClassArr);
+    inactiveEl.classList.add(...inactiveClassArr);
+  };
+
+  workTab.addEventListener("click", () => {
+    if (!workTab.classList.contains("active")) {
+      setActiveTab(workTab, breakTab);
+      timerDisplay.innerText = "25:00";
+      document.title = "[学習中] 25:00"
+    }
+  });
+
+  breakTab.addEventListener("click", () => {
+    if (!breakTab.classList.contains("active")) {
+      setActiveTab(breakTab, workTab);
+      timerDisplay.innerText = "05:00";
+      document.title = "[休憩中] 05:00"
+    }
+  });
+</script>
