@@ -124,12 +124,15 @@
     const startBtn = document.getElementById("btn-start");
     const pauseBtn = document.getElementById("btn-pause");
     const finishBtn = document.getElementById("btn-finish");
+    const categorySelect = document.getElementById("log_category_id");
 
     // 開始
     startBtn.addEventListener("click", () => {
       startBtn.classList.add("hidden")
       pauseBtn.classList.remove("hidden");
       finishBtn.classList.remove("hidden");
+
+      categorySelect.disabled = true;
 
       intervalId = setInterval(() => {
         if (isPaused == false) {
@@ -167,6 +170,8 @@
       startBtn.classList.remove("hidden");
       pauseBtn.classList.add("hidden");
       finishBtn.classList.add("hidden");
+
+      categorySelect.disabled = false;
 
       isPaused = false;
       pauseBtn.innerText = "一時停止"
