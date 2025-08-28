@@ -45,21 +45,29 @@
     const workTab = document.getElementById("work-tab");
     const breakTab = document.getElementById("break-tab");
     const timerDisplay = document.getElementById("timer-display");
-    const startBtn      = document.getElementById("btn-start");
-    const pauseBtn = document.getElementById("btn-pause");
-    const finishBtn = document.getElementById("btn-finish");
 
     const activeClassArr   = ["active", "text-blue-900", "border-b-2", "border-blue-900"];
     const inactiveClassArr = ["text-gray-500", "hover:text-blue-800"];
 
+    // モード定義
+    const Mode = { WORK: "work", BREAK: "break" };
+    const DURATION_BY_MODE = { [Mode.WORK]: 25 * 60, [Mode.BREAK]: 5 * 60 };  // LSB: 1秒
+
     let intervalId = null;
-    let leftTime = 25 * 60; // LSB: 1sec
+    let leftTime; // LSB: 1sec
     let isPaused = false;
 
     // タイマーページ以外では何もしない
-    if (!workTab) return;
+    if (!workTab) {
+      return;
+    }
 
-    // 学習／休憩タブの切り替え処理
+    // タイマー動作中かチェック関数
+    const isRunning = () => {
+      return intervalId !== null;
+    };
+
+    // 学習／休憩タブの切り替え
     const setActiveTab = (activeEl, inactiveEl) => {
       activeEl.classList.remove(...inactiveClassArr);
       activeEl.classList.add(...activeClassArr);
@@ -68,28 +76,12 @@
       inactiveEl.classList.add(...inactiveClassArr);
     };
 
-    // 学習タブ
-    workTab.addEventListener("click", () => {
-      if ((!workTab.classList.contains("active")) && intervalId == null) {
-        setActiveTab(workTab, breakTab);
-        timerDisplay.innerText = "25:00";
-        leftTime = 25 * 60;
-      }
-    });
-
-    // 休憩タブ
-    breakTab.addEventListener("click", () => {
-      if ((!breakTab.classList.contains("active")) && intervalId == null) {
-        setActiveTab(breakTab, workTab);
-        timerDisplay.innerText = "05:00";
-        leftTime = 5 * 60;
-      }
-    });
-
+    // 1桁目を0埋めする関数
     const zeroPadding = (n) => {
       return String(n).padStart(2, "0")
     };
 
+    // hh:mm の形式にフォーマットする関数
     const format = (sec) => {
       return `${zeroPadding(Math.floor(sec / 60))}:${zeroPadding(sec % 60)}`
     };
@@ -97,13 +89,41 @@
     // タイマー・ブラウザタブの残り秒数更新
     const updateDisplay = () => {
       timerDisplay.textContent = format(leftTime);
-      if (workTab.classList.contains("active")) {
-        document.title = `${format(leftTime)}`;
-      }
-      else {
-        document.title = `${format(leftTime)}`;
-      }
+      document.title = `${format(leftTime)}`;
     };
+
+    // タブを有効化する共通関数
+    const activateMode = (newMode) => {
+
+      // タイマー動作中はタブ切り替え不可
+      if (isRunning()) {
+        return;
+      }
+
+      const isWork = (newMode === Mode.WORK);
+      setActiveTab((isWork ? workTab : breakTab), (isWork ? breakTab : workTab)); // 三項演算子で引数を切り替えてる
+
+      leftTime = DURATION_BY_MODE[newMode];
+      updateDisplay();
+    };
+
+    // 学習タブクリック
+    workTab.addEventListener("click", () => {
+      if (!workTab.classList.contains("active")) {
+        activateMode(Mode.WORK);
+      };
+    });
+
+    // 休憩タブクリック
+    breakTab.addEventListener("click", () => {
+      if (!breakTab.classList.contains("active")) {
+        activateMode(Mode.BREAK);
+      }
+    });
+
+    const startBtn = document.getElementById("btn-start");
+    const pauseBtn = document.getElementById("btn-pause");
+    const finishBtn = document.getElementById("btn-finish");
 
     // 開始
     startBtn.addEventListener("click", () => {
@@ -163,5 +183,8 @@
       updateDisplay();
       document.title = "Daylog"
     });
+
+    // 初期表示
+    activateMode(Mode.WORK);
   });
 </script>
