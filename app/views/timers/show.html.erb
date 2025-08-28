@@ -54,6 +54,7 @@
 
   let intervalId = null;
   let leftTime = 25 * 60; // LSB: 1sec
+  let isPaused = false;
 
   // 学習／休憩タブの切り替え処理
   const setActiveTab = (activeEl, inactiveEl) => {
@@ -64,6 +65,7 @@
     inactiveEl.classList.add(...inactiveClassArr);
   };
 
+  // 学習タブ
   workTab.addEventListener("click", () => {
     if ((!workTab.classList.contains("active")) && intervalId == null) {
       setActiveTab(workTab, breakTab);
@@ -72,6 +74,7 @@
     }
   });
 
+  // 休憩タブ
   breakTab.addEventListener("click", () => {
     if ((!breakTab.classList.contains("active")) && intervalId == null) {
       setActiveTab(breakTab, workTab);
@@ -99,30 +102,44 @@
     }
   };
 
+  // 開始
   startBtn.addEventListener("click", () => {
     startBtn.classList.add("hidden")
     pauseBtn.classList.remove("hidden");
     finishBtn.classList.remove("hidden");
 
     intervalId = setInterval(() => {
-      if (leftTime > 0) {
-        leftTime -= 1;
-        updateDisplay();
-      }
-      else {
-        clearInterval(intervalId);
-        intervalId = null;
-        alert("終了");
-        updateDisplay();
+      if (isPaused == false) {
+        if (leftTime > 0) {
+          leftTime -= 1;
+          updateDisplay();
+        }
+        else {
+          clearInterval(intervalId);
+          intervalId = null;
+          alert("終了");
+          updateDisplay();
+        }
       }
     }, 1000);
     updateDisplay();
   });
 
+  // 一時停止
   pauseBtn.addEventListener("click", () => {
-
+    if (isPaused == false) {
+      isPaused = true;
+      pauseBtn.innerText = "再開"
+      timerDisplay.classList.add("text-gray-600")
+    }
+    else {
+      isPaused = false;
+      pauseBtn.innerText = "一時停止"
+      timerDisplay.classList.remove("text-gray-600")
+    }
   });
 
+  // 終了
   finishBtn.addEventListener("click", () => {
     startBtn.classList.remove("hidden");
     pauseBtn.classList.add("hidden");
