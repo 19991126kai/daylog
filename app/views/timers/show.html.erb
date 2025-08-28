@@ -99,10 +99,10 @@
     const updateDisplay = () => {
       timerDisplay.textContent = format(leftTime);
       if (workTab.classList.contains("active")) {
-        document.title = `Daylog ｜ [学習中] ${format(leftTime)}`;
+        document.title = `${format(leftTime)}`;
       }
       else {
-        document.title = `Daylog ｜ [休憩中] ${format(leftTime)}`;
+        document.title = `${format(leftTime)}`;
       }
     };
 
