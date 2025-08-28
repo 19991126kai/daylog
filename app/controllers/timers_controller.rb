@@ -3,6 +3,6 @@ class TimersController < ApplicationController
 
   def show
     @log = current_user.logs.new
-    @categories = current_user.categories.order(:name)
+    @categories = current_user.categories.order(:id)
   end
 end
