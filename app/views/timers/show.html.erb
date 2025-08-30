@@ -71,6 +71,11 @@
       return intervalId !== null;
     };
 
+    // 現在のモード取得
+    const currentMode = () => {
+      return workTab.classList.contains("active") ? Mode.WORK : Mode.BREAK;
+    }
+
     // 学習／休憩タブの切り替え
     const setActiveTab = (activeEl, inactiveEl) => {
       activeEl.classList.remove(...inactiveClassArr);
@@ -189,24 +194,11 @@
 
     // 終了
     finishBtn.addEventListener("click", () => {
-      startBtn.classList.remove("hidden");
-      pauseBtn.classList.add("hidden");
-      finishBtn.classList.add("hidden");
-
-      categorySelect.disabled = false;
-
-      isPaused = false;
-      pauseBtn.innerText = "一時停止"
-      timerDisplay.classList.remove("text-gray-600")
-
       clearInterval(intervalId);
       intervalId = null;
-      if (workTab.classList.contains("active")) {
-        leftTime = 25 * 60;
-      }
-      else {
-        leftTime = 5 * 60;
-      }
+      isPaused = false;
+      leftTime = DURATION_BY_MODE[currentMode()];
+      showIdleUI();
       updateDisplay();
     });
 
