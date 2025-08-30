@@ -103,16 +103,13 @@
 
     // タブを有効化する共通関数
     const activateMode = (newMode) => {
-
       // タイマー動作中はタブ切り替え不可
       if (isRunning()) {
         return;
       }
-
       const isWork = (newMode === Mode.WORK);
-      setActiveTab((isWork ? workTab : breakTab), (isWork ? breakTab : workTab)); // 三項演算子で引数を切り替えてる
-
       leftTime = DURATION_BY_MODE[newMode];
+      setActiveTab((isWork ? workTab : breakTab), (isWork ? breakTab : workTab)); // 三項演算子で引数を切り替えてる
       updateTimerDisplay();
     };
 
@@ -157,15 +154,15 @@
 
       if (leftTime > 0) {
         leftTime -= 1;
-        updateTimerDisplay();
-        if (leftTime === 0) {
-          clearInterval(intervalId);
-          intervalId = null;
-          alert("終了");
-          updateTimerDisplay();
-          showIdleUI();
-        }
       }
+      else {
+        clearInterval(intervalId);
+        intervalId = null;
+        alert("終了");
+        leftTime = DURATION_BY_MODE[currentMode()];
+        showIdleUI();
+      }
+      updateTimerDisplay();
     };
 
     // 開始
