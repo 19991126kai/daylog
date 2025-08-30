@@ -177,16 +177,14 @@
 
     // 一時停止
     pauseBtn.addEventListener("click", () => {
-      if (isPaused == false) {
-        isPaused = true;
-        pauseBtn.innerText = "再開"
-        timerDisplay.classList.add("text-gray-600")
+      // タイマー開始前の一時停止処理をガード
+      if (intervalId === null) {
+        return;
       }
-      else {
-        isPaused = false;
-        pauseBtn.innerText = "一時停止"
-        timerDisplay.classList.remove("text-gray-600")
-      }
+
+      isPaused = !isPaused;
+      pauseBtn.innerText = isPaused ? "再開" : "一時停止";
+      timerDisplay.classList.toggle("text-gray-600", isPaused);
     });
 
     // 終了
