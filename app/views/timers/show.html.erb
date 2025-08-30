@@ -90,15 +90,15 @@
       return String(n).padStart(2, "0")
     };
 
-    // hh:mm の形式にフォーマットする関数
-    const format = (sec) => {
+    // MM:SS の形式にフォーマットする関数
+    const formatMMSS = (sec) => {
       return `${zeroPadding(Math.floor(sec / 60))}:${zeroPadding(sec % 60)}`
     };
 
     // タイマー・ブラウザタブの残り秒数更新
     const updateTimerDisplay = () => {
-      timerDisplay.textContent = format(leftTime);
-      document.title = `${format(leftTime)}`;
+      timerDisplay.textContent = formatMMSS(leftTime);
+      document.title = `${formatMMSS(leftTime)}`;
     };
 
     // タブを有効化する共通関数
