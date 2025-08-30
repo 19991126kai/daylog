@@ -45,6 +45,10 @@
     const workTab = document.getElementById("work-tab");
     const breakTab = document.getElementById("break-tab");
     const timerDisplay = document.getElementById("timer-display");
+    const startBtn = document.getElementById("btn-start");
+    const pauseBtn = document.getElementById("btn-pause");
+    const finishBtn = document.getElementById("btn-finish");
+    const categorySelect = document.getElementById("log_category_id");
 
     const activeClassArr   = ["active", "text-blue-900", "border-b-2", "border-blue-900"];
     const inactiveClassArr = ["text-gray-500", "hover:text-blue-800"];
@@ -121,33 +125,53 @@
       }
     });
 
-    const startBtn = document.getElementById("btn-start");
-    const pauseBtn = document.getElementById("btn-pause");
-    const finishBtn = document.getElementById("btn-finish");
-    const categorySelect = document.getElementById("log_category_id");
+    // UI切替（初期状態→タイマー作動）
+    const showRunningUI = () => {
+      startBtn.classList.add("hidden");
+      pauseBtn.classList.remove("hidden");
+      finishBtn.classList.remove("hidden");
+      categorySelect.disabled = true;
+    };
+
+    // UI切り替え（タイマー作動状態→初期状態）
+    const showIdleUI = () => {
+      startBtn.classList.remove("hidden");
+      pauseBtn.classList.add("hidden");
+      finishBtn.classList.add("hidden");
+      categorySelect.disabled = false;
+      pauseBtn.innerText = "一時停止";
+      timerDisplay.classList.remove("text-gray-600");
+    };
+
+    // 1秒ごとの処理
+    const tick = () => {
+      // 一時停止中はスキップ
+      if (isPaused) {
+        return;
+      };
+
+      if (leftTime > 0) {
+        leftTime -= 1;
+        updateDisplay();
+        if (leftTime === 0) {
+          clearInterval(intervalId);
+          intervalId = null;
+          alert("終了");
+          updateDisplay();
+          showIdleUI();
+        }
+      }
+    };
 
     // 開始
     startBtn.addEventListener("click", () => {
-      startBtn.classList.add("hidden")
-      pauseBtn.classList.remove("hidden");
-      finishBtn.classList.remove("hidden");
+      // 二重にカウントダウン始めてしまうのをガード
+      if (intervalId !== null) {
+        return;
+      };
 
-      categorySelect.disabled = true;
-
-      intervalId = setInterval(() => {
-        if (isPaused == false) {
-          if (leftTime > 0) {
-            leftTime -= 1;
-            updateDisplay();
-          }
-          else {
-            clearInterval(intervalId);
-            intervalId = null;
-            alert("終了");
-            updateDisplay();
-          }
-        }
-      }, 1000);
+      intervalId = setInterval(tick, 1000);
+      showRunningUI();
       updateDisplay();
     });
 
