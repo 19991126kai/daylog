@@ -96,7 +96,7 @@
     };
 
     // タイマー・ブラウザタブの残り秒数更新
-    const updateDisplay = () => {
+    const updateTimerDisplay = () => {
       timerDisplay.textContent = format(leftTime);
       document.title = `${format(leftTime)}`;
     };
@@ -113,7 +113,7 @@
       setActiveTab((isWork ? workTab : breakTab), (isWork ? breakTab : workTab)); // 三項演算子で引数を切り替えてる
 
       leftTime = DURATION_BY_MODE[newMode];
-      updateDisplay();
+      updateTimerDisplay();
     };
 
     // 学習タブクリック
@@ -157,12 +157,12 @@
 
       if (leftTime > 0) {
         leftTime -= 1;
-        updateDisplay();
+        updateTimerDisplay();
         if (leftTime === 0) {
           clearInterval(intervalId);
           intervalId = null;
           alert("終了");
-          updateDisplay();
+          updateTimerDisplay();
           showIdleUI();
         }
       }
@@ -177,7 +177,7 @@
 
       intervalId = setInterval(tick, 1000);
       showRunningUI();
-      updateDisplay();
+      updateTimerDisplay();
     });
 
     // 一時停止
@@ -199,7 +199,7 @@
       isPaused = false;
       leftTime = DURATION_BY_MODE[currentMode()];
       showIdleUI();
-      updateDisplay();
+      updateTimerDisplay();
     });
 
     // 初期表示
