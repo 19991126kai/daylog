@@ -119,7 +119,7 @@
         return;
       };
 
-      const duration = Math.floor((startedLeftTime - leftTime) / 60);
+      const duration = Math.floor((startedLeftTime - (startedLeftTime - leftTime)) / 60);
       // 1分未満なら保存しない
       if (duration === 0) {
         return;
@@ -127,8 +127,8 @@
 
       startField.value  = toRailsTS(startedAt);
       endField.value = toRailsTS(endedAt);
-      durationField.value = String(duration);
-
+      durationField.value = duration;
+      debugger
       form.submit();
     };
 
@@ -235,7 +235,7 @@
         clearInterval(intervalId);
         intervalId = null;
       }
-
+  debugger
       // ログ送信処理
       submitLog(Date.now());
 
