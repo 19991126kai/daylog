@@ -7,6 +7,9 @@
         <%= f.collection_select :category_id, @categories, :id, :name,
               { include_blank: "未分類" },
               class: "w-full px-4 py-2 border border-gray-300 rounded" %>
+        <%= hidden_field_tag "log[start_time]", "", id: "log-start-time" %>
+        <%= hidden_field_tag "log[end_time]", "", id: "log-end-time" %>
+        <%= hidden_field_tag "log[duration]", "", id: "log-duration" %>
       </div>
     <% end %>
     <div class="flex w-1/2 mx-auto mb-6 border-b border-gray-200 select-none">
@@ -49,6 +52,10 @@
     const pauseBtn = document.getElementById("btn-pause");
     const finishBtn = document.getElementById("btn-finish");
     const categorySelect = document.getElementById("log_category_id");
+    const form = document.getElementById("timer-form");
+    const startField = document.getElementById("log-start-time");
+    const endField = document.getElementById("log-end-time");
+    const durationField = document.getElementById("log-duration");
 
     const activeClassArr   = ["active", "text-blue-900", "border-b-2", "border-blue-900"];
     const inactiveClassArr = ["text-gray-500", "hover:text-blue-800"];
@@ -60,6 +67,8 @@
     let intervalId = null;
     let leftTime; // LSB: 1sec
     let isPaused = false;
+    let startedLeftTime = null;
+    let startedAt = null;
 
     // タイマーページ以外では何もしない
     if (!workTab) {
@@ -93,6 +102,34 @@
     // MM:SS の形式にフォーマットする関数
     const formatMMSS = (sec) => {
       return `${zeroPadding(Math.floor(sec / 60))}:${zeroPadding(sec % 60)}`
+    };
+
+    // Rails用フォーマット YYYY-MM-DD HH:MM:SS
+    const toRailsTS = (ms) => {
+      const d = new Date(ms);
+      const Y = d.getFullYear(), M = zeroPadding(d.getMonth()+1), D = zeroPadding(d.getDate());
+      const h = zeroPadding(d.getHours()), m = zeroPadding(d.getMinutes()), s = zeroPadding(d.getSeconds());
+      return `${Y}-${M}-${D} ${h}:${m}:${s}`;
+    };
+
+    // ログ送信処理
+    const submitLog = (endedAt) => {
+      // 休憩時間は保存しない
+      if (currentMode() !== Mode.WORK) {
+        return;
+      };
+
+      const duration = Math.floor((startedLeftTime - leftTime) / 60);
+      // 1分未満なら保存しない
+      if (duration === 0) {
+        return;
+      }
+
+      startField.value  = toRailsTS(startedAt);
+      endField.value = toRailsTS(endedAt);
+      durationField.value = String(duration);
+
+      form.submit();
     };
 
     // タイマー・ブラウザタブの残り秒数更新
@@ -172,6 +209,9 @@
         return;
       };
 
+      startedLeftTime = leftTime;
+      startedAt = Date.now();
+
       intervalId = setInterval(tick, 1000);
       showRunningUI();
       updateTimerDisplay();
@@ -191,12 +231,21 @@
 
     // 終了
     finishBtn.addEventListener("click", () => {
-      clearInterval(intervalId);
-      intervalId = null;
+      if (intervalId !== null) {
+        clearInterval(intervalId);
+        intervalId = null;
+      }
+
+      // ログ送信処理
+      submitLog(Date.now());
+
       isPaused = false;
       leftTime = DURATION_BY_MODE[currentMode()];
       showIdleUI();
       updateTimerDisplay();
+
+      startedLeftTime = null;
+      startedAt = null;
     });
 
     // 初期表示
