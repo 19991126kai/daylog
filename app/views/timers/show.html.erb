@@ -125,6 +125,7 @@
         return;
       }
 
+      categorySelect.disabled = false;
       startField.value  = toRailsTS(startedAt);
       endField.value = toRailsTS(endedAt);
       durationField.value = duration;
@@ -188,8 +189,6 @@
         return;
       };
 
-      debugger
-
       if (leftTime > 0) {
         leftTime -= 1;
       }
@@ -202,6 +201,7 @@
         alert("終了！");
 
         // ログ送信処理
+        categorySelect.disabled = false;
         submitLog(Date.now());
 
         isPaused = false;
