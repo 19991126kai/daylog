@@ -227,6 +227,9 @@
       intervalId = setInterval(tick, 1000);
       showRunningUI();
       updateTimerDisplay();
+
+      // WebWorkerを起動する
+      const myWorker = new Worker("timers/worker.js");
     });
 
     // 一時停止
