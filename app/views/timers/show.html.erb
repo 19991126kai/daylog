@@ -119,7 +119,7 @@
         return;
       };
 
-      const duration = Math.floor((startedLeftTime - (startedLeftTime - leftTime)) / 60);
+      const duration = Math.floor((startedLeftTime - leftTime) / 60);
       // 1分未満なら保存しない
       if (duration === 0) {
         return;
@@ -128,7 +128,6 @@
       startField.value  = toRailsTS(startedAt);
       endField.value = toRailsTS(endedAt);
       durationField.value = duration;
-      debugger
       form.submit();
     };
 
@@ -189,15 +188,28 @@
         return;
       };
 
+      debugger
+
       if (leftTime > 0) {
         leftTime -= 1;
       }
       else {
-        clearInterval(intervalId);
-        intervalId = null;
-        alert("終了");
+        if (intervalId !== null) {
+          clearInterval(intervalId);
+          intervalId = null;
+        }
+
+        alert("終了！");
+
+        // ログ送信処理
+        submitLog(Date.now());
+
+        isPaused = false;
         leftTime = DURATION_BY_MODE[currentMode()];
         showIdleUI();
+
+        startedLeftTime = null;
+        startedAt = null;
       }
       updateTimerDisplay();
     };
@@ -235,7 +247,7 @@
         clearInterval(intervalId);
         intervalId = null;
       }
-  debugger
+
       // ログ送信処理
       submitLog(Date.now());
 
