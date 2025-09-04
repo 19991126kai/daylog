@@ -70,6 +70,29 @@
     let startedLeftTime = null;
     let startedAt = null;
 
+    // Worker定義
+    const workerSrc = `
+      // Main → Workerの受信確認
+      self.addEventListener('message', (e) => {
+      console.log(e);
+      self.postMessage("ok");
+      });
+    `;
+
+    // Worker生成
+    const blob = new Blob([workerSrc], { type: "application/javascript" });
+    const workerURL = URL.createObjectURL(blob);
+    const worker = new Worker(workerURL);
+
+    // Worker → Mainの受信確認
+    worker.addEventListener("message", (e) => {
+      console.log(e);
+    });
+
+    worker.addEventListener("error", (err) => {
+      console.error(err);
+    });
+
     // タイマーページ以外では何もしない
     if (!workTab) {
       return;
@@ -228,8 +251,8 @@
       showRunningUI();
       updateTimerDisplay();
 
-      // WebWorkerを起動する
-      const myWorker = new Worker("timers/worker.js");
+      // Main → Workerに送信
+      worker.postMessage("worker start");
     });
 
     // 一時停止
