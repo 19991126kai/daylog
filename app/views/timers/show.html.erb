@@ -65,17 +65,69 @@
     const DURATION_BY_MODE = { [Mode.WORK]: 25 * 60, [Mode.BREAK]: 5 * 60 };  // LSB: 1秒
 
     let intervalId = null;
-    let leftTime; // LSB: 1sec
+    let leftSec; // LSB: 1sec
     let isPaused = false;
-    let startedLeftTime = null;
-    let startedAt = null;
+    let startedLeftSec;
+    let startedAt;
 
     // Worker定義
     const workerSrc = `
-      // Main → Workerの受信確認
+      let leftSec;
+      let paused;
+      let timerId;
+
+      const postTick = () => {
+        self.postMessage({ type: 'tick', leftSec });
+      };
+
+      const clearTimer = () => {
+        if (timerId !== null) {
+          clearInterval(timerId);
+          timerId = null;
+        }
+      };
+
+      // Main → Workerのイベントリスナー
       self.addEventListener('message', (e) => {
-      console.log(e);
-      self.postMessage("ok");
+        const msg = e.data || {};
+        switch (msg.type) {
+          case 'start': {
+            clearTimer();
+            leftSec = (msg.leftSec);
+            paused = false;
+            postTick();
+
+            timerId = setInterval(() => {
+              // 一時停止中はスキップ
+              if (paused) return;
+              if (leftSec > 0) {
+                leftSec -= 1;
+                postTick();
+                if (leftSec === 0) {
+                  clearTimer();
+                  self.postMessage({ type: 'done' });
+                }
+              }
+            }, 1000);
+            break;
+          }
+
+          case 'pause': {
+            paused = true;
+            break;
+          }
+
+          case 'resume': {
+            paused = false;
+            break;
+          }
+
+          case 'stop': {
+            clearTimer();
+            self.postMessage({ type: 'stopped' });
+            break;
+          }
+        }
       });
     `;
 
@@ -84,9 +136,43 @@
     const workerURL = URL.createObjectURL(blob);
     const worker = new Worker(workerURL);
 
-    // Worker → Mainの受信確認
+    // Worker → Mainのイベントリスナー
     worker.addEventListener("message", (e) => {
-      console.log(e);
+      const msg = e.data;
+
+      switch (msg.type) {
+        case 'tick': {
+          leftSec = msg.leftSec;
+          updateTimerDisplay();
+          break;
+        };
+
+        case "done": {
+          intervalId = null;
+          alert("終了！");
+          categorySelect.disabled = false;
+          submitLog(Date.now());
+          isPaused = false;
+          leftSec = DURATION_BY_MODE[currentMode()];
+          showIdleUI();
+          startedLeftSec = null;
+          startedAt = null;
+          updateTimerDisplay();
+          break;
+        };
+
+        case "stopped": {
+          intervalId = null;
+          submitLog(Date.now());
+          isPaused = false;
+          leftSec = DURATION_BY_MODE[currentMode()];
+          showIdleUI();
+          startedLeftSec = null;
+          startedAt = null;
+          updateTimerDisplay();
+          break;
+        }
+      }
     });
 
     worker.addEventListener("error", (err) => {
@@ -96,7 +182,7 @@
     // タイマーページ以外では何もしない
     if (!workTab) {
       return;
-    }
+    };
 
     // タイマー動作中かチェック関数
     const isRunning = () => {
@@ -106,7 +192,7 @@
     // 現在のモード取得
     const currentMode = () => {
       return workTab.classList.contains("active") ? Mode.WORK : Mode.BREAK;
-    }
+    };
 
     // 学習／休憩タブの切り替え
     const setActiveTab = (activeEl, inactiveEl) => {
@@ -142,7 +228,7 @@
         return;
       };
 
-      const duration = Math.floor((startedLeftTime - leftTime) / 60);
+      const duration = Math.floor((startedLeftSec - leftSec) / 60);
       // 1分未満なら保存しない
       if (duration === 0) {
         return;
@@ -157,8 +243,8 @@
 
     // タイマー・ブラウザタブの残り秒数更新
     const updateTimerDisplay = () => {
-      timerDisplay.textContent = formatMMSS(leftTime);
-      document.title = `${formatMMSS(leftTime)}`;
+      timerDisplay.textContent = formatMMSS(leftSec);
+      document.title = `${formatMMSS(leftSec)}`;
     };
 
     // タブを有効化する共通関数
@@ -168,7 +254,7 @@
         return;
       }
       const isWork = (newMode === Mode.WORK);
-      leftTime = DURATION_BY_MODE[newMode];
+      leftSec = DURATION_BY_MODE[newMode];
       setActiveTab((isWork ? workTab : breakTab), (isWork ? breakTab : workTab)); // 三項演算子で引数を切り替えてる
       updateTimerDisplay();
     };
@@ -205,85 +291,37 @@
       timerDisplay.classList.remove("text-gray-600");
     };
 
-    // 1秒ごとの処理
-    const tick = () => {
-      // 一時停止中はスキップ
-      if (isPaused) {
-        return;
-      };
-
-      if (leftTime > 0) {
-        leftTime -= 1;
-      }
-      else {
-        if (intervalId !== null) {
-          clearInterval(intervalId);
-          intervalId = null;
-        }
-
-        alert("終了！");
-
-        // ログ送信処理
-        categorySelect.disabled = false;
-        submitLog(Date.now());
-
-        isPaused = false;
-        leftTime = DURATION_BY_MODE[currentMode()];
-        showIdleUI();
-
-        startedLeftTime = null;
-        startedAt = null;
-      }
-      updateTimerDisplay();
-    };
-
-    // 開始
+    // 開始ボタンクリック
     startBtn.addEventListener("click", () => {
-      // 二重にカウントダウン始めてしまうのをガード
-      if (intervalId !== null) {
-        return;
-      };
+      if (isRunning()) return; // 二重起動ガード
 
-      startedLeftTime = leftTime;
+      startedLeftSec = leftSec;
       startedAt = Date.now();
 
-      intervalId = setInterval(tick, 1000);
+      worker.postMessage({ type: "start", leftSec: leftSec });
+
+      // 従来コード互換：動作中判定用にダミー値をセット
+      intervalId = 1;
+
       showRunningUI();
       updateTimerDisplay();
-
-      // Main → Workerに送信
-      worker.postMessage("worker start");
     });
 
-    // 一時停止
+    // 一時停止ボタンクリック
     pauseBtn.addEventListener("click", () => {
-      // タイマー開始前の一時停止処理をガード
-      if (intervalId === null) {
-        return;
-      }
+      if (!isRunning()) return; // 開始前は無視
 
       isPaused = !isPaused;
       pauseBtn.innerText = isPaused ? "再開" : "一時停止";
       timerDisplay.classList.toggle("text-gray-600", isPaused);
+      worker.postMessage({ type: isPaused ? "pause" : "resume" });
     });
 
-    // 終了
+    // 終了ボタンクリック
     finishBtn.addEventListener("click", () => {
-      if (intervalId !== null) {
-        clearInterval(intervalId);
-        intervalId = null;
-      }
+      if (!isRunning()) return; // 開始前は無視
 
-      // ログ送信処理
-      submitLog(Date.now());
-
-      isPaused = false;
-      leftTime = DURATION_BY_MODE[currentMode()];
-      showIdleUI();
-      updateTimerDisplay();
-
-      startedLeftTime = null;
-      startedAt = null;
+      worker.postMessage({ type: "stop" });
     });
 
     // 初期表示
