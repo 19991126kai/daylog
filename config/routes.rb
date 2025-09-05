@@ -4,6 +4,7 @@ Rails.application.routes.draw do
   resource :timer, only: [ :show ]
   resources :categories, except: [ :show ]
   resources :logs, except: [ :show ]
+  resource :share, only: [ :show ]
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.
