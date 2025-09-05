@@ -1,1 +1,39 @@
-<h1>shere</h1>
+<section class="py-12 px-4 max-w-3xl mx-auto">
+  <div class="max-w-5xl mx-auto bg-white p-8 rounded shadow-md">
+    <h2 class="text-3xl font-bold text-blue-900 mb-8 border-b pb-2">シェア</h2>
+
+    <%= form_with url: share_path, method: :get, local: true, id: "x-share-form", class: "w-full max-w-md mb-8 mx-auto" do %>
+      <div class="mb-6">
+        <label for="share-date" class="block text-gray-700 text-sm font-semibold mb-2">日付</label>
+        <input type="date"
+               id="share-date"
+               name="date"
+               value="<%= @date.strftime('%Y-%m-%d') %>"
+               class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+      </div>
+
+      <div class="mb-6">
+        <label for="share-category" class="block text-gray-700 text-sm font-semibold mb-2">カテゴリ</label>
+        <%= select_tag :category_id,
+              options_from_collection_for_select(@categories, :id, :name),
+              include_blank: "未選択",
+              id: "share-category",
+              class: "w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" %>
+      </div>
+    <% end %>
+
+    <div class="mb-6 text-center">
+      <p>学習時間：</p>
+      <p>累計：</p>
+    </div>
+
+    <div class="mt-4 text-center">
+      <button class="bg-gray-900 font-bold text-white py-2 px-8 rounded hover:bg-gray-800 transition inline-flex items-center gap-2">
+        <span class="material-symbols-outlined text-sm">ios_share</span>
+        <%= link_to "X に投稿", "https://x.com/intent/post", target: '_blank' %>
+      </button>
+    </div>
+  </div>
+</section>
+
+
