@@ -24,9 +24,16 @@
     <% end %>
 
     <div class="text-gray-500 text-sm mb-1 text-center">学習時間：</div>
-    <div class="text-3xl font-bold text-gray-900 text-center"><span id="daily-min"><%= @daily_minutes %></span> 分</div>
+    <div class="text-3xl font-bold text-gray-900 text-center">
+      <span id="daily-min"
+            data-minutes="<%= @daily_minutes %>"><%= minutes_to_hm(@daily_minutes) %></span>
+    </div>
+
     <div class="text-gray-500 text-sm mb-1 text-center">累計：</div>
-    <div class="text-3xl font-bold text-gray-900 text-center"><span id="cumulative-min"><%= @cumulative_minutes %></span> 分</div>
+    <div class="text-3xl font-bold text-gray-900 text-center">
+      <span id="cumulative-min"
+            data-minutes="<%= @cumulative_minutes %>"><%= minutes_to_hm(@cumulative_minutes) %></span>
+    </div>
 
     <div id="btn-open-x" class="mt-8 text-center">
       <button class="bg-gray-900 font-bold text-white py-2 px-8 rounded hover:bg-gray-800 hover:cursor-pointer transition inline-flex items-center gap-2">
@@ -48,23 +55,35 @@ document.addEventListener("turbo:load", () => {
   dateInput.addEventListener("change", onChange);
   catSelect.addEventListener("change", onChange);
 
+  const toHM = (minutes, padMinutes = true) => {
+    const m = Math.max(0, parseInt(minutes, 10) || 0);
+    const h = Math.floor(m / 60);
+    const r = m % 60;
+    const mm = padMinutes ? String(r).padStart(2, "0") : r;
+    if (h && r) return `${h}時間${mm}分`;
+    if (h)      return `${h}時間`;
+    return `${r}分`;
+  };
+
   // ポストする文章作成
   const buildPostText = () => {
-    const date = dateInput.value;
-    const selected = catSelect.options[catSelect.selectedIndex];
-    const catName = (catSelect.value && selected) ? selected.text : "未分類";
+    const date = document.getElementById("share-date").value;
+    const catSelect = document.getElementById("share-category");
+    const selected  = catSelect.options[catSelect.selectedIndex];
+    const catName   = (catSelect.value && selected) ? selected.text : "未分類";
 
-    const daily = document.getElementById("daily-min").textContent;
-    const cum   = document.getElementById("cumulative-min").textContent;
+    // 画面に表示されている整形済みテキストをそのまま使う
+    const dailyText = document.getElementById("daily-min").textContent;
+    const cumText   = document.getElementById("cumulative-min").textContent;
 
-    return `学習記録 ${date}\n${catName}：当日 ${daily} 分（累計 ${cum} 分）\n#Daylog #学習記録`;
+    return `【${date} 学習記録】\n✅内容\n${catName}\n\n💡学んだこと\n\n⏰学習時間\n${dailyText} (累計:${cumText})\n`;
   };
 
   // X投稿画面表示
   const shareUrl = "<%= root_url %>";
   const openXIntent = () => {
     const text = buildPostText();
-    const intent = `https://x.com/intent/Post?text=${encodeURIComponent(text)}&url=${encodeURIComponent(shareUrl)}`;
+    const intent = `https://x.com/intent/Post?text=${encodeURIComponent(text)}&hashtags=Daylog`;
     window.open(intent, "_blank", "noopener,noreferrer,width=600,height=600");
   };
 
