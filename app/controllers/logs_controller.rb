@@ -48,6 +48,6 @@ class LogsController < ApplicationController
   private
 
   def log_params
-    params.require(:log).permit(:category_id, :start_time, :end_time)
+    params.require(:log).permit(:category_id, :start_time, :end_time, :duration)
   end
 end

@@ -1,43 +1,330 @@
-<h1>ポモドーロタイマー</h1>
-
-<input id="hours" type="text" value="0">時間
-<input id="minutes" type="text" value="0">分
-<input id="seconds" type="text" value="0">秒
-
-<div id="timer">00:00:00</div>
-<button id="start-button">スタート</button>
-
+<section class="py-4 px-4 max-w-5xl mx-auto">
+  <div class="w-full bg-white p-10 rounded shadow-md">
+    <h2 class="text-3xl font-bold text-blue-900 mb-8 border-b pb-2">タイマー</h2>
+    <%= form_with model: @log, url: logs_path, method: :post, local: true, class: "w-full max-w-md mb-8 mx-auto", id: "timer-form" do |f| %>
+      <div class="mb-6">
+        <%= f.label :category_id, "カテゴリ", class: "block text-gray-700 text-sm font-semibold mb-2" %>
+        <%= f.collection_select :category_id, @categories, :id, :name,
+              { include_blank: "未分類" },
+              class: "w-full px-4 py-2 border border-gray-300 rounded" %>
+        <%= hidden_field_tag "log[start_time]", "", id: "log-start-time" %>
+        <%= hidden_field_tag "log[end_time]", "", id: "log-end-time" %>
+        <%= hidden_field_tag "log[duration]", "", id: "log-duration" %>
+      </div>
+    <% end %>
+    <div class="flex w-1/2 mx-auto mb-6 border-b border-gray-200 select-none">
+      <div id="work-tab" class="active w-1/2 text-center py-2 font-semibold text-blue-900 border-b-2 border-blue-900 cursor-pointer">
+        学習
+      </div>
+      <div id="break-tab" class="w-1/2 text-center py-2 font-semibold text-gray-500 hover:text-blue-800 cursor-pointer">
+        休憩
+      </div>
+    </div>
+    <div id="timer" class="flex flex-col items-center gap-8">
+      <%# タイマー秒数表示 %>
+      <div class="font-bold tabular-nums tracking-wider text-9xl my-10">
+        <span id="timer-display">25:00</span>
+      </div>
+      <%# タイマー操作ボタン %>
+      <div class="flex items-center gap-4 mb-5">
+        <button id="btn-start"
+                class="bg-blue-900 text-white font-semibold py-3 px-8 rounded hover:bg-blue-800 hover:cursor-pointer transition">
+          開始
+        </button>
+        <button id="btn-pause"
+                class="hidden bg-gray-200 text-gray-800 font-semibold py-3 px-8 rounded hover:bg-gray-300 hover:cursor-pointer transition">
+          一時停止
+        </button>
+        <button id="btn-finish"
+                class="hidden bg-emerald-600 text-white font-semibold py-3 px-8 rounded hover:bg-emerald-700 hover:cursor-pointer transition">
+          終了
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
 <script>
-  const startButton = document.getElementById("start-button");
-  const timerDisplay = document.getElementById("timer");
-  
-  
+  document.addEventListener("turbo:load", () => {
+    const workTab = document.getElementById("work-tab");
+    const breakTab = document.getElementById("break-tab");
+    const timerDisplay = document.getElementById("timer-display");
+    const startBtn = document.getElementById("btn-start");
+    const pauseBtn = document.getElementById("btn-pause");
+    const finishBtn = document.getElementById("btn-finish");
+    const categorySelect = document.getElementById("log_category_id");
+    const form = document.getElementById("timer-form");
+    const startField = document.getElementById("log-start-time");
+    const endField = document.getElementById("log-end-time");
+    const durationField = document.getElementById("log-duration");
 
-  startButton.addEventListener("click", () => {
-    let hours = parseInt(document.getElementById("hours").value);
-    let minutes = parseInt(document.getElementById("minutes").value);
-    let seconds = parseInt(document.getElementById("seconds").value);
-    let timeLeft = (hours * 3600) + (minutes * 60) + seconds
-    
-    const updateDisplay = () => {
-      const h = Math.floor(timeLeft / 3600);
-      const m = Math.floor((timeLeft % 3600) / 60);
-      const s = timeLeft % 60;
-      timerDisplay.textContent = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-    }
+    const activeClassArr   = ["active", "text-blue-900", "border-b-2", "border-blue-900"];
+    const inactiveClassArr = ["text-gray-500", "hover:text-blue-800"];
 
-    const countDown = () => {
-      timeLeft -= 1;
-      updateDisplay();
+    // モード定義
+    const Mode = { WORK: "work", BREAK: "break" };
+    const DURATION_BY_MODE = { [Mode.WORK]: 25 * 60, [Mode.BREAK]: 5 * 60 };  // LSB: 1秒
 
-      if (timeLeft == 0) {
-        clearInterval(interval);
-        alert("タイマーが終了しました");
+    let intervalId = null;
+    let leftSec; // LSB: 1sec
+    let isPaused = false;
+    let startedLeftSec;
+    let startedAt;
+
+    // Worker定義
+    const workerSrc = `
+      let leftSec;
+      let paused;
+      let timerId;
+
+      const postTick = () => {
+        self.postMessage({ type: 'tick', leftSec });
+      };
+
+      const clearTimer = () => {
+        if (timerId !== null) {
+          clearInterval(timerId);
+          timerId = null;
+        }
+      };
+
+      // Main → Workerのイベントリスナー
+      self.addEventListener('message', (e) => {
+        const msg = e.data || {};
+        switch (msg.type) {
+          case 'start': {
+            clearTimer();
+            leftSec = (msg.leftSec);
+            paused = false;
+            postTick();
+
+            timerId = setInterval(() => {
+              // 一時停止中はスキップ
+              if (paused) return;
+              if (leftSec > 0) {
+                leftSec -= 1;
+                postTick();
+                if (leftSec === 0) {
+                  clearTimer();
+                  self.postMessage({ type: 'done' });
+                }
+              }
+            }, 1000);
+            break;
+          }
+
+          case 'pause': {
+            paused = true;
+            break;
+          }
+
+          case 'resume': {
+            paused = false;
+            break;
+          }
+
+          case 'stop': {
+            clearTimer();
+            self.postMessage({ type: 'stopped' });
+            break;
+          }
+        }
+      });
+    `;
+
+    // Worker生成
+    const blob = new Blob([workerSrc], { type: "application/javascript" });
+    const workerURL = URL.createObjectURL(blob);
+    const worker = new Worker(workerURL);
+
+    // Worker → Mainのイベントリスナー
+    worker.addEventListener("message", (e) => {
+      const msg = e.data;
+
+      switch (msg.type) {
+        case 'tick': {
+          leftSec = msg.leftSec;
+          updateTimerDisplay();
+          break;
+        };
+
+        case "done": {
+          intervalId = null;
+          alert("終了！");
+          categorySelect.disabled = false;
+          submitLog(Date.now());
+          isPaused = false;
+          leftSec = DURATION_BY_MODE[currentMode()];
+          showIdleUI();
+          startedLeftSec = null;
+          startedAt = null;
+          updateTimerDisplay();
+          break;
+        };
+
+        case "stopped": {
+          intervalId = null;
+          submitLog(Date.now());
+          isPaused = false;
+          leftSec = DURATION_BY_MODE[currentMode()];
+          showIdleUI();
+          startedLeftSec = null;
+          startedAt = null;
+          updateTimerDisplay();
+          break;
+        }
       }
-    }
+    });
 
-    // 1秒ごとにタイマー表示をカウントダウン
-    updateDisplay();
-    const interval = setInterval(countDown, 1000);
+    worker.addEventListener("error", (err) => {
+      console.error(err);
+    });
+
+    // タイマーページ以外では何もしない
+    if (!workTab) {
+      return;
+    };
+
+    // タイマー動作中かチェック関数
+    const isRunning = () => {
+      return intervalId !== null;
+    };
+
+    // 現在のモード取得
+    const currentMode = () => {
+      return workTab.classList.contains("active") ? Mode.WORK : Mode.BREAK;
+    };
+
+    // 学習／休憩タブの切り替え
+    const setActiveTab = (activeEl, inactiveEl) => {
+      activeEl.classList.remove(...inactiveClassArr);
+      activeEl.classList.add(...activeClassArr);
+
+      inactiveEl.classList.remove(...activeClassArr);
+      inactiveEl.classList.add(...inactiveClassArr);
+    };
+
+    // 1桁目を0埋めする関数
+    const zeroPadding = (n) => {
+      return String(n).padStart(2, "0")
+    };
+
+    // MM:SS の形式にフォーマットする関数
+    const formatMMSS = (sec) => {
+      return `${zeroPadding(Math.floor(sec / 60))}:${zeroPadding(sec % 60)}`
+    };
+
+    // Rails用フォーマット YYYY-MM-DD HH:MM:SS
+    const toRailsTS = (ms) => {
+      const d = new Date(ms);
+      const Y = d.getFullYear(), M = zeroPadding(d.getMonth()+1), D = zeroPadding(d.getDate());
+      const h = zeroPadding(d.getHours()), m = zeroPadding(d.getMinutes()), s = zeroPadding(d.getSeconds());
+      return `${Y}-${M}-${D} ${h}:${m}:${s}`;
+    };
+
+    // ログ送信処理
+    const submitLog = (endedAt) => {
+      // 休憩時間は保存しない
+      if (currentMode() !== Mode.WORK) {
+        return;
+      };
+
+      const duration = Math.floor((startedLeftSec - leftSec) / 60);
+      // 1分未満なら保存しない
+      if (duration === 0) {
+        return;
+      }
+
+      categorySelect.disabled = false;
+      startField.value  = toRailsTS(startedAt);
+      endField.value = toRailsTS(endedAt);
+      durationField.value = duration;
+      form.submit();
+    };
+
+    // タイマー・ブラウザタブの残り秒数更新
+    const updateTimerDisplay = () => {
+      timerDisplay.textContent = formatMMSS(leftSec);
+      document.title = `${formatMMSS(leftSec)}`;
+    };
+
+    // タブを有効化する共通関数
+    const activateMode = (newMode) => {
+      // タイマー動作中はタブ切り替え不可
+      if (isRunning()) {
+        return;
+      }
+      const isWork = (newMode === Mode.WORK);
+      leftSec = DURATION_BY_MODE[newMode];
+      setActiveTab((isWork ? workTab : breakTab), (isWork ? breakTab : workTab)); // 三項演算子で引数を切り替えてる
+      updateTimerDisplay();
+    };
+
+    // 学習タブクリック
+    workTab.addEventListener("click", () => {
+      if (!workTab.classList.contains("active")) {
+        activateMode(Mode.WORK);
+      };
+    });
+
+    // 休憩タブクリック
+    breakTab.addEventListener("click", () => {
+      if (!breakTab.classList.contains("active")) {
+        activateMode(Mode.BREAK);
+      }
+    });
+
+    // UI切替（初期状態→タイマー作動）
+    const showRunningUI = () => {
+      startBtn.classList.add("hidden");
+      pauseBtn.classList.remove("hidden");
+      finishBtn.classList.remove("hidden");
+      categorySelect.disabled = true;
+    };
+
+    // UI切り替え（タイマー作動状態→初期状態）
+    const showIdleUI = () => {
+      startBtn.classList.remove("hidden");
+      pauseBtn.classList.add("hidden");
+      finishBtn.classList.add("hidden");
+      categorySelect.disabled = false;
+      pauseBtn.innerText = "一時停止";
+      timerDisplay.classList.remove("text-gray-600");
+    };
+
+    // 開始ボタンクリック
+    startBtn.addEventListener("click", () => {
+      if (isRunning()) return; // 二重起動ガード
+
+      startedLeftSec = leftSec;
+      startedAt = Date.now();
+
+      worker.postMessage({ type: "start", leftSec: leftSec });
+
+      // 従来コード互換：動作中判定用にダミー値をセット
+      intervalId = 1;
+
+      showRunningUI();
+      updateTimerDisplay();
+    });
+
+    // 一時停止ボタンクリック
+    pauseBtn.addEventListener("click", () => {
+      if (!isRunning()) return; // 開始前は無視
+
+      isPaused = !isPaused;
+      pauseBtn.innerText = isPaused ? "再開" : "一時停止";
+      timerDisplay.classList.toggle("text-gray-600", isPaused);
+      worker.postMessage({ type: isPaused ? "pause" : "resume" });
+    });
+
+    // 終了ボタンクリック
+    finishBtn.addEventListener("click", () => {
+      if (!isRunning()) return; // 開始前は無視
+
+      worker.postMessage({ type: "stop" });
+    });
+
+    // 初期表示
+    activateMode(Mode.WORK);
   });
 </script>
