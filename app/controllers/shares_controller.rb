@@ -8,6 +8,16 @@ class SharesController < ApplicationController
     else
       Date.current
     end
-    @category_id = params[:category_id].presence || @categories.first&.id
+    @category_id = params[:category_id].presence
+
+    scope =
+      if @category_id.present?
+        Log.where(category_id: @category_id)
+      else
+        Log.where(category_id: nil) # カテゴリが未分類のログたち
+      end
+
+    @daily_minutes = scope.where(start_time: @date.all_day).sum(:duration).to_i
+    @cumulative_minutes = scope.where("start_time <= ?", @date.end_of_day).sum(:duration).to_i
   end
 end
