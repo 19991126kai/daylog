@@ -18,6 +18,7 @@ class LogsController < ApplicationController
 
   def create
     @log = current_user.logs.build(log_params)
+    @log.duration = (@log.end_time - @log.start_time) / 60
     if @log.save
       redirect_to logs_path, notice: "ログを作成しました"
     else
