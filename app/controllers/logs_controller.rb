@@ -18,7 +18,7 @@ class LogsController < ApplicationController
 
   def create
     @log = current_user.logs.build(log_params)
-    @log.duration = (@log.end_time - @log.start_time) / 60
+    @log.duration = calc_duration(@log.start_time, @log.end_time)
     if @log.save
       redirect_to logs_path, notice: "ログを作成しました"
     else
@@ -33,7 +33,9 @@ class LogsController < ApplicationController
 
   def update
     @log = current_user.logs.find(params[:id])
-    if @log.update(log_params)
+    @log.assign_attributes(log_params)
+    @log.duration = calc_duration(@log.start_time, @log.end_time)
+    if @log.save
       redirect_to logs_path
     else
       render :edit, status: :unprocessable_entity
@@ -50,5 +52,9 @@ class LogsController < ApplicationController
 
   def log_params
     params.require(:log).permit(:category_id, :start_time, :end_time, :duration)
+  end
+
+  def calc_duration(start_time, end_time)
+    ((end_time - start_time) / 60).to_i
   end
 end
