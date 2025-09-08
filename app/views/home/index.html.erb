@@ -24,7 +24,7 @@
             新規登録
           <% end %>
 
-          <%= link_to timer_path, class: "border border-white text-white font-semibold py-2 px-6 rounded hover:bg-white hover:text-blue-900 transition inline-flex items-center justify-center gap-2" do %>
+          <%= link_to guest_sign_in_path, data: {turbo_method: :post}, class: "border border-white text-white font-semibold py-2 px-6 rounded hover:bg-white hover:text-blue-900 transition inline-flex items-center justify-center gap-2" do %>
             <span class="material-symbols-outlined">play_circle</span>
             ゲストログイン
           <% end %>

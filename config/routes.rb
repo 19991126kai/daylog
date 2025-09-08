@@ -1,6 +1,12 @@
 Rails.application.routes.draw do
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
-  devise_for :users
+  devise_for :users, controllers: {
+    sessions: "users/sessions"
+  }
+  devise_scope :user do
+    post "users/guest_sign_in", to: "users/sessions#guest_sign_in", as: :guest_sign_in
+  end
+
   resource :timer, only: [ :show ]
   resources :categories, except: [ :show ]
   resources :logs, except: [ :show ]
