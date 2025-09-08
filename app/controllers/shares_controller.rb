@@ -1,4 +1,6 @@
 class SharesController < ApplicationController
+  before_action :authenticate_user!
+
   def show
     @categories = current_user.categories.order(id: "desc")
 
