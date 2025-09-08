@@ -12,9 +12,9 @@ class SharesController < ApplicationController
 
     scope =
       if @category_id.present?
-        Log.where(category_id: @category_id)
+        current_user.logs.where(category_id: @category_id)
       else
-        Log.where(category_id: nil) # カテゴリが未分類のログたち
+        current_user.logs.where(category_id: nil) # カテゴリが未分類のログたち
       end
 
     @daily_minutes = scope.where(start_time: @date.all_day).sum(:duration).to_i
