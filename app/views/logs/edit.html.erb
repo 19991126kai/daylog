@@ -11,11 +11,13 @@
       <div class="mb-6">
         <%= f.label :start_time, "開始時間", class: "block text-gray-700 text-sm font-semibold mb-2" %>
         <%= f.datetime_local_field :start_time,
+              value: @log.start_time&.strftime("%Y-%m-%dT%H:%M"),
               class: "w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" %>
       </div>
       <div class="mb-6">
         <%= f.label :end_time, "終了時間", class: "block text-gray-700 text-sm font-semibold mb-2" %>
         <%= f.datetime_local_field :end_time,
+              value: @log.end_time&.strftime("%Y-%m-%dT%H:%M"),
               class: "w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" %>
       </div>
       <div class="flex items-center gap-4">

@@ -326,5 +326,12 @@
 
     // 初期表示
     activateMode(Mode.WORK);
+
+    document.addEventListener("turbo:before-visit", (e) => {
+      if (isRunning()) {
+        e.preventDefault();
+        alert("タイマーが動作中はページを移動できません。");
+      }
+    });
   });
 </script>
