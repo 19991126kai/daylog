@@ -72,5 +72,5 @@ https://github.com/user-attachments/assets/4840b049-d8fe-45d1-b018-d8ea73b01c8b
 Daylog は「投稿の手間のせいで、本命の学習時間を削いでしまう」という自分の課題を解決するために開発しました。   
 自分の手で最後まで作り切った経験は、今後の現場でのキャリアの土台になると考えています。   
 今後も改善を続けていきますので、アドバイスやフィードバックをいただけると嬉しいです。   
-[![X (formerly Twitter) Follow](https://img.shields.io/badge/@19991126kai-000000?logo=x&logoColor=white)](https://x.com/kai_dev)
+[![X (formerly Twitter) Follow](https://img.shields.io/badge/@19991126kai-000000?logo=x&logoColor=white)](https://x.com/19991126kai)
 
