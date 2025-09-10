@@ -38,7 +38,8 @@ Daylog は、日々の学習をシンプルに記録・SNS投稿できる学習�
   - データはセッション終了時に削除される
   
 ## 🎥 デモ動画
-作成中
+※音は出ません   
+https://github.com/user-attachments/assets/1b5c4fe4-8d62-40fb-8fc8-b127e6d3b442
 
 ## 🛠 使用技術・環境
 - **フロントエンド**: HTML(erb), TailwindCSS, JavaScript(WebWorker, Turbo)
