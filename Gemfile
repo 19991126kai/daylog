@@ -46,6 +46,9 @@ gem "devise"
 # ページネーション
 gem "kaminari"
 
+# スキーマ情報
+gem "annotate"
+
 gem "tailwindcss-rails", "~> 4.3"
 
 group :production do
