@@ -44,6 +44,72 @@
   </div>
 </section>
 <script>
+  // Worker定義
+  const workerSrc = `
+    let leftSec;
+    let paused;
+    let timerId;
+
+    const postTick = () => {
+      self.postMessage({ type: 'tick', leftSec });
+    };
+
+    const clearTimer = () => {
+      if (timerId !== null) {
+        clearInterval(timerId);
+        timerId = null;
+      }
+    };
+
+    // Main → Workerのイベントリスナー
+    self.addEventListener('message', (e) => {
+      const msg = e.data || {};
+      switch (msg.type) {
+        case 'start': {
+          clearTimer();
+          leftSec = (msg.leftSec);
+          paused = false;
+          postTick();
+
+          timerId = setInterval(() => {
+            // 一時停止中はスキップ
+            if (paused) return;
+            if (leftSec > 0) {
+              leftSec -= 1;
+              postTick();
+              if (leftSec === 0) {
+                clearTimer();
+                self.postMessage({ type: 'done' });
+              }
+            }
+          }, 1000);
+          break;
+        }
+
+        case 'pause': {
+          paused = true;
+          break;
+        }
+
+        case 'resume': {
+          paused = false;
+          break;
+        }
+
+        case 'stop': {
+          clearTimer();
+          self.postMessage({ type: 'stopped' });
+          break;
+        }
+      }
+    });
+  `;
+
+  // Worker生成
+  const blob = new Blob([workerSrc], { type: "application/javascript" });
+  const workerURL = URL.createObjectURL(blob);
+  const worker = new Worker(workerURL);
+
   document.addEventListener("turbo:load", () => {
     const workTab = document.getElementById("work-tab");
     const breakTab = document.getElementById("break-tab");
@@ -70,74 +136,8 @@
     let startedLeftSec;
     let startedAt;
 
-    // Worker定義
-    const workerSrc = `
-      let leftSec;
-      let paused;
-      let timerId;
-
-      const postTick = () => {
-        self.postMessage({ type: 'tick', leftSec });
-      };
-
-      const clearTimer = () => {
-        if (timerId !== null) {
-          clearInterval(timerId);
-          timerId = null;
-        }
-      };
-
-      // Main → Workerのイベントリスナー
-      self.addEventListener('message', (e) => {
-        const msg = e.data || {};
-        switch (msg.type) {
-          case 'start': {
-            clearTimer();
-            leftSec = (msg.leftSec);
-            paused = false;
-            postTick();
-
-            timerId = setInterval(() => {
-              // 一時停止中はスキップ
-              if (paused) return;
-              if (leftSec > 0) {
-                leftSec -= 1;
-                postTick();
-                if (leftSec === 0) {
-                  clearTimer();
-                  self.postMessage({ type: 'done' });
-                }
-              }
-            }, 1000);
-            break;
-          }
-
-          case 'pause': {
-            paused = true;
-            break;
-          }
-
-          case 'resume': {
-            paused = false;
-            break;
-          }
-
-          case 'stop': {
-            clearTimer();
-            self.postMessage({ type: 'stopped' });
-            break;
-          }
-        }
-      });
-    `;
-
-    // Worker生成
-    const blob = new Blob([workerSrc], { type: "application/javascript" });
-    const workerURL = URL.createObjectURL(blob);
-    const worker = new Worker(workerURL);
-
     // Worker → Mainのイベントリスナー
-    worker.addEventListener("message", (e) => {
+    worker.onmessage = (e) => {
       const msg = e.data;
 
       switch (msg.type) {
@@ -173,7 +173,7 @@
           break;
         }
       }
-    });
+    };
 
     worker.addEventListener("error", (err) => {
       console.error(err);
