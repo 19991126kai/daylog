@@ -43,7 +43,6 @@ https://daylog-x72d.onrender.com/timer
 ## 🎥 デモ動画  
 https://github.com/user-attachments/assets/4840b049-d8fe-45d1-b018-d8ea73b01c8b   
 
-
 ## 🛠 使用技術・環境
 - **フロントエンド**: HTML(erb), TailwindCSS, JavaScript(Turbo)
 - **バックエンド**: Ruby on Rails 8, JavaScript(WebWorker)
@@ -51,6 +50,9 @@ https://github.com/user-attachments/assets/4840b049-d8fe-45d1-b018-d8ea73b01c8b
 - **認証**: Devise
 - **デプロイ**: Render
 - **その他ツール**: GitHub, Rubocop(lintツール), kaminari(ページネーション), RSpec(テスト), Bullet(N+1問題検出ツール)
+
+## ER図
+<img width="601" height="840" alt="daylog-erd" src="https://github.com/user-attachments/assets/c698004d-20f8-4392-b071-135f8fdefca6" />
 
 ## ⚙️ 実装で意識した点
 - **保守性と拡張性**  
@@ -73,4 +75,3 @@ Daylog は「投稿の手間のせいで、本命の学習時間を削いでし�
 自分の手で最後まで作り切った経験は、今後の現場でのキャリアの土台になると考えています。   
 今後も改善を続けていきますので、アドバイスやフィードバックをいただけると嬉しいです。   
 [![X (formerly Twitter) Follow](https://img.shields.io/badge/@19991126kai-000000?logo=x&logoColor=white)](https://x.com/19991126kai)
-
