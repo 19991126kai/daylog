@@ -75,6 +75,9 @@ group :development do
 
   # N+1問題が発生したらアラートしてくれる
   gem "bullet"
+
+  # ER図の生成
+  gem "rails-erd"
 end
 
 group :test do
