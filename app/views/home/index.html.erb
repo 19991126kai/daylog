@@ -1,9 +1,7 @@
 <div class="text-gray-700 bg-white">
   <section class="py-15 flex flex-col">
     <div class="container mx-auto flex-grow flex items-center justify-center px-4">
-
       <div class="flex flex-col md:flex-row items-center gap-10">
-        
         <div class="text-left">
           <h1 class="text-3xl md:text-5xl font-bold mb-6 leading-tight text-center whitespace-nowrap">
             タイマーで学習記録<br/>
@@ -15,38 +13,31 @@
             SNSで共有して“続ける力”を育てるアプリです。
           </p>
         </div>
-
         <div class="flex justify-center">
           <%= image_tag("https://bootstrapmade.com/demo/templates/FlexStart/assets/img/hero-img.png", class: "w-full max-w-md height-auto") %>
         </div>
-
       </div>
     </div>
   </section>
   <section class="bg-gray-50 py-15 text-gray-700">
     <div class="container mx-auto px-6 text-center">
       <h2 class="text-3xl font-bold mb-10">Daylogでできること</h2>
-
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-
         <div class="p-6 bg-white rounded-2xl shadow hover:shadow-lg transition">
           <div class="text-blue-600 text-5xl mb-4">🕒</div>
           <h3 class="text-2xl font-semibold mb-3">学習時間を自動で記録</h3>
           <p>タイマーを使って学習を開始するだけ。終了すると自動で記録され、累計時間も一目で確認できます。</p>
         </div>
-
         <div class="p-6 bg-white rounded-2xl shadow hover:shadow-lg transition">
           <div class="text-blue-600 text-5xl mb-4">🗂️</div>
           <h3 class="text-2xl font-semibold mb-3">学習内容を整理・可視化</h3>
           <p>カテゴリ別に記録を整理。どの分野に時間を使っているかを可視化し、自分の成長をデータで実感できます。</p>
         </div>
-
         <div class="p-6 bg-white rounded-2xl shadow hover:shadow-lg transition">
           <div class="text-blue-600 text-5xl mb-4">🌐</div>
           <h3 class="text-2xl font-semibold mb-3">SNSでシェアして継続</h3>
           <p>学習ログをSNSにワンタップで投稿。仲間と励まし合いながら、楽しく学びを続けられます。</p>
         </div>
-
       </div>
     </div>
   </section>
@@ -58,7 +49,8 @@
     </div>
   </section>
   <div class="copyright">
-    <div class="container mx-auto text-center py-4 text-sm text-gray-500">
+    <small class="block mx-auto text-center py-4 text-sm text-gray-500">
       &copy; <%= Time.current.year %> Daylog. All rights reserved.
+    </small>
   </div>
 </div>
