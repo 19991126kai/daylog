@@ -56,10 +56,44 @@ https://daylog-x72d.onrender.com/timer
 
   
 ## 🎥 使用イメージ  
-https://github.com/user-attachments/assets/4840b049-d8fe-45d1-b018-d8ea73b01c8b   
+https://github.com/user-attachments/assets/89e2e0ba-2539-4a9f-8eea-d9f6fe798f8b
+
+
 
 ## ER図
-<img width="601" height="840" alt="daylog-erd" src="https://github.com/user-attachments/assets/c698004d-20f8-4392-b071-135f8fdefca6" />
+```mermaid
+erDiagram
+  users ||--o{ categories : "1 user has many categories"
+  categories ||--o{ logs: "1 category has many logs"
+
+  users {
+    integer id PK
+    string name "ユーザー名"
+    string email "メールアドレス"
+    string password "パスワード"
+    boolean guest "ゲストユーザーかどうか"
+    datetime created_at
+    datetime updated_at
+  }
+
+  categories {
+    integer id PK
+    references user FK
+    string name "カテゴリ名"
+    datetime created_at
+    datetime updated_at
+  }
+
+  logs {
+    integer id PK
+    references category FK
+    datetime start_time "学習開始時刻"
+    datetime end_time "学習終了時刻"
+    integer duration "学習時間（分）"
+    datetime created_at
+    datetime updated_at
+  }
+```
 
 ## ⚙️ 実装で意識した点
 - **保守性と拡張性**  
