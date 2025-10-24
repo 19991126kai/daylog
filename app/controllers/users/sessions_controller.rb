@@ -1,12 +1,8 @@
 class Users::SessionsController < Devise::SessionsController
   def guest_sign_in
-    user = User.create!(
-      email: "guest_#{Time.now.to_i}#{rand(1000)}@example.com",
-      password: SecureRandom.urlsafe_base64,
-      guest: true
-    )
-    sign_in user
-    redirect_to timer_path, notice: "ゲストとしてログインしました"
+    guest = User.create_guest_with_samples!
+    sign_in guest
+    redirect_to timer_path, notice: "ゲストとしてログインしました", status: :see_other
   end
 
   def destroy
