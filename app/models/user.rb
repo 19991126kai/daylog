@@ -21,13 +21,4 @@ class User < ApplicationRecord
 
   has_many :categories, dependent: :destroy
   has_many :logs, dependent: :destroy
-
-  def self.guest
-    create!(
-      email: "guest_#{SecureRandom.hex(10)}@example.com",
-      password: SecureRandom.urlsafe_base64,
-      name: "guest",
-      guest: true
-    )
-  end
 end
