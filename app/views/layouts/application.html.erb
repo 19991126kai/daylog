@@ -41,7 +41,7 @@
     <% else %>
       <div class="flex min-h-screen">
         <!-- PC: 固定サイドバー -->
-        <aside class="hidden md:block fixed left-0 top-0 h-full w-64 border-r bg-white z-30">
+        <aside class="hidden md:block fixed left-0 top-0 screen-h-max w-64 border-r z-30 flex flex-col h-full bg-blue-900 text-white">
           <%= render "layouts/sidebar" %>
         </aside>
 
@@ -82,7 +82,7 @@
           <!-- 本体 -->
           <aside
             id="mobileDrawerPanel"
-            class="absolute left-0 top-0 h-full max-w-[88vw] shadow-xl overflow-y-auto focus:outline-none"
+            class="absolute left-0 top-0 h-full max-w-[64vw] shadow-xl overflow-y-auto focus:outline-none bg-blue-900 text-white"
             tabindex="-1"
             role="dialog"
             aria-modal="true"

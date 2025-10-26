@@ -1,6 +1,6 @@
-<aside class="flex h-full w-64 flex-col bg-blue-900 text-white">
+<div class="flex min-h-full flex-col">
   <!-- ロゴ -->
-  <div class="flex items-center gap-2 px-4 py-4 border-b border-white/20">
+  <div class="items-center gap-2 px-4 py-4 border-b border-white/20">
     <%= link_to "Daylog", root_path, class: "text-2xl font-semibold hover:text-gray-200" %>
   </div>
 
@@ -14,7 +14,7 @@
     </nav>
 
     <!-- アカウント周り -->
-    <div class="mt-auto px-2 py-3 border-t border-white/20">
+    <div class="mt-auto px-2 py-6 border-t border-white/20">
       <div class="mb-2 flex items-center gap-2 text-sm text-gray-200">
         <span class="material-symbols-outlined text-3xl">account_circle</span>
         <div class="truncate">
@@ -47,4 +47,4 @@
       </div>
     </div>
   <% end %>
-</aside>
+</div>
