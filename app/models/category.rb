@@ -16,5 +16,5 @@ class Category < ApplicationRecord
   end
 
   belongs_to :user
-  has_many :logs
+  has_many :logs, dependent: :destroy
 end

@@ -1,40 +1,56 @@
-<section class="bg-blue-900 text-white h-screen flex flex-col">
-  <div class="container mx-auto flex-grow flex items-center justify-center px-4">
-
-    <div class="max-w-6xl w-full grid grid-cols-2 gap-10 items-center">
-      
-      <div class="text-left">
-        <h1 class="text-6xl font-bold mb-6 leading-tight">
-          学習の習慣を、<br/>
-          記録とともに
-        </h1>
-        <p class="text-xl mb-8">
-          Daylogは、毎日の学習時間を自動で記録し、<br/>
-          SNS共有できる学習ログアプリです。
-        </p>
-
-        <div class="flex gap-4">
-          <%= link_to new_user_session_path, class: "bg-white text-blue-900 font-semibold py-2 px-6 rounded hover:bg-gray-200 transition inline-flex items-center justify-center gap-2" do %>
-            <span class="material-symbols-outlined">login</span>
-            ログイン
-          <% end %>
-
-          <%= link_to new_user_registration_path, class: "bg-gray-100 text-blue-900 font-semibold py-2 px-6 rounded hover:bg-gray-300 transition inline-flex items-center justify-center gap-2" do %>
-            <span class="material-symbols-outlined">person_add</span>
-            新規登録
-          <% end %>
-
-          <%= link_to guest_sign_in_path, data: {turbo_method: :post}, class: "border border-white text-white font-semibold py-2 px-6 rounded hover:bg-white hover:text-blue-900 transition inline-flex items-center justify-center gap-2" do %>
-            <span class="material-symbols-outlined">play_circle</span>
-            ゲストログイン
-          <% end %>
+<div class="text-gray-700 bg-white">
+  <section class="py-15 flex flex-col">
+    <div class="container mx-auto flex-grow flex items-center justify-center px-4">
+      <div class="flex flex-col md:flex-row items-center gap-10">
+        <div class="text-left">
+          <h1 class="text-3xl md:text-5xl font-bold mb-6 leading-tight text-center whitespace-nowrap">
+            タイマーで学習記録<br/>
+            ✕<br/>
+            SNSシェアで習慣化
+          </h1>
+          <p class="text-large md:text-xl mb-8">
+            Daylogは、学習時間を自動で記録し、<br>
+            SNSで共有して“続ける力”を育てるアプリです。
+          </p>
+        </div>
+        <div class="flex justify-center">
+          <%= image_tag("https://bootstrapmade.com/demo/templates/FlexStart/assets/img/hero-img.png", class: "w-full max-w-md height-auto") %>
         </div>
       </div>
-
-      <div class="flex justify-center">
-        <%= image_tag("https://bootstrapmade.com/demo/templates/FlexStart/assets/img/hero-img.png", class: "rounded-lg w-full max-w-md") %>
-      </div>
-
     </div>
+  </section>
+  <section class="bg-gray-50 py-15 text-gray-700">
+    <div class="container mx-auto px-6 text-center">
+      <h2 class="text-3xl font-bold mb-10">Daylogでできること</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="p-6 bg-white rounded-2xl shadow hover:shadow-lg transition">
+          <div class="text-blue-600 text-5xl mb-4">🕒</div>
+          <h3 class="text-2xl font-semibold mb-3">学習時間を自動で記録</h3>
+          <p>タイマーを使って学習を開始するだけ。終了すると自動で記録され、累計時間も一目で確認できます。</p>
+        </div>
+        <div class="p-6 bg-white rounded-2xl shadow hover:shadow-lg transition">
+          <div class="text-blue-600 text-5xl mb-4">🗂️</div>
+          <h3 class="text-2xl font-semibold mb-3">学習内容を整理・可視化</h3>
+          <p>カテゴリ別に記録を整理。どの分野に時間を使っているかを可視化し、自分の成長をデータで実感できます。</p>
+        </div>
+        <div class="p-6 bg-white rounded-2xl shadow hover:shadow-lg transition">
+          <div class="text-blue-600 text-5xl mb-4">🌐</div>
+          <h3 class="text-2xl font-semibold mb-3">SNSでシェアして継続</h3>
+          <p>学習ログをSNSにワンタップで投稿。仲間と励まし合いながら、楽しく学びを続けられます。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section>
+    <div class="mx-auto x-6 py-15 px-5 text-center">
+      <h2 class="text-3xl font-bold mb-6">💬 ご意見・フィードバックはこちら</h2>
+      <p class="text-lg mb-8">ご質問やご意見がございましたら、お気軽にお問い合わせください。</p>
+      <%= link_to "意見を送る", "#", class: "bg-blue-900 text-white font-semibold py-3 px-6 rounded hover:bg-blue-800 transition inline-block" %>
+    </div>
+  </section>
+  <div class="copyright">
+    <small class="block mx-auto text-center py-4 text-sm text-gray-500">
+      &copy; <%= Time.current.year %> Daylog. All rights reserved.
+    </small>
   </div>
-</section>
+</div>
