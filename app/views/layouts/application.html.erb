@@ -25,8 +25,117 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body class="bg-gray-100">
-    <%= render "layouts/header" %>
-    <%= yield %>
+  <body class="min-h-screen bg-gray-50 text-gray-900">
+    <%# --- ヘッダーを使うページ: TOP と Deviseの new (ログイン/新規登録) --- %>
+    <% use_header =
+         (controller_name == "home" && action_name == "index") ||
+         (defined?(devise_controller?) && devise_controller? && action_name == "new")
+    %>
+
+    <% if use_header %>
+      <%= render "layouts/header" %>
+      <main class="mx-auto max-w-6xl p-6">
+        <%= yield %>
+      </main>
+
+    <% else %>
+      <div class="flex min-h-screen">
+        <!-- PC: 固定サイドバー -->
+        <aside class="hidden md:block fixed left-0 top-0 h-full w-64 border-r bg-white z-30">
+          <%= render "layouts/sidebar" %>
+        </aside>
+
+        <!-- モバイル: トップバー（固定） -->
+        <div class="md:hidden fixed inset-x-0 top-0 z-50 bg-blue-900 text-white border-b">
+          <div class="h-14 px-4 flex items-center justify-between">
+            <button
+              id="mobileMenuButton"
+              class="p-2"
+              aria-label="Open menu"
+              aria-controls="mobileDrawerOverlay"
+              aria-expanded="false"
+            >
+              <svg viewBox="0 0 24 24" class="w-6 h-6" aria-hidden="true">
+                <path
+                  d="M4 6h16M4 12h16M4 18h16"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                />
+              </svg>
+            </button>
+            <div class="font-semibold text-xl">Daylog</div>
+            <div class="w-6"></div>
+          </div>
+        </div>
+
+        <!-- モバイル: ドロワー（_sidebar を再利用） -->
+        <div
+          id="mobileDrawerOverlay"
+          class="md:hidden fixed inset-0 z-50 hidden"
+          aria-hidden="true"
+        >
+          <!-- 半透明オーバーレイ -->
+          <div id="mobileDrawerBackdrop" class="absolute inset-0 bg-black/50"></div>
+
+          <!-- 本体 -->
+          <aside
+            id="mobileDrawerPanel"
+            class="absolute left-0 top-0 h-full max-w-[88vw] shadow-xl overflow-y-auto focus:outline-none"
+            tabindex="-1"
+            role="dialog"
+            aria-modal="true"
+          >
+            <%= render "layouts/sidebar" %>
+          </aside>
+        </div>
+
+        <!-- メイン（PCはサイドバー分オフセット、モバイルはバー高さ分スペーサー） -->
+        <main class="flex-1 w-full md:ml-64">
+          <div class="md:hidden h-14"></div>
+          <div class="mx-auto max-w-6xl p-6 md:p-8">
+            <%= yield %>
+          </div>
+        </main>
+      </div>
+
+    <% end %>
   </body>
+  <script>
+    (function () {
+      const btn     = document.getElementById("mobileMenuButton");
+      const overlay = document.getElementById("mobileDrawerOverlay");
+      const panel   = document.getElementById("mobileDrawerPanel");
+      const close   = document.getElementById("mobileMenuClose");
+      const backdrop= document.getElementById("mobileDrawerBackdrop");
+
+      if (!btn || !overlay || !panel) return;
+
+      const open = () => {
+        overlay.classList.remove("hidden");
+        document.documentElement.classList.add("overflow-y-hidden");
+        btn.setAttribute("aria-expanded", "true");
+        // 少し遅らせてフォーカス（表示後にフォーカスが乗るように）
+        setTimeout(() => panel.focus(), 0);
+        window.addEventListener("keydown", onKeydown);
+      };
+
+      const closeDrawer = () => {
+        overlay.classList.add("hidden");
+        document.documentElement.classList.remove("overflow-y-hidden");
+        btn.setAttribute("aria-expanded", "false");
+        window.removeEventListener("keydown", onKeydown);
+        btn.focus();
+      };
+
+      const onKeydown = (e) => {
+        if (e.key === "Escape") closeDrawer();
+      };
+
+      btn.addEventListener("click", open);
+      close?.addEventListener("click", closeDrawer);
+      backdrop?.addEventListener("click", closeDrawer);
+    })();
+  </script>
 </html>
