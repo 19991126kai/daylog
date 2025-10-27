@@ -7,7 +7,7 @@
   <% if current_user %>
     <!-- ナビゲーション -->
     <nav class="flex flex-col p-3 gap-1">
-      <%= nav_link_to "タイマー", timer_path, match: :exact %>
+      <%= nav_link_to "記録する", timer_path, match: :exact %>
       <%= nav_link_to "カテゴリ設定", categories_path, match: :prefix %>
       <%= nav_link_to "学習履歴", logs_path, match: :prefix %>
       <%= nav_link_to "シェア", share_path, match: :exact %>
