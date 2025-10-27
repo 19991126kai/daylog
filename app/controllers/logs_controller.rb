@@ -45,7 +45,7 @@ class LogsController < ApplicationController
   def destroy
     @log = current_user.logs.find(params[:id])
     @log.destroy
-    redirect_to logs_path
+    redirect_to request.referrer || root_path
   end
 
   private
