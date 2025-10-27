@@ -3,6 +3,15 @@ class TimersController < ApplicationController
 
   def show
     @log = current_user.logs.new
-    @categories = current_user.categories.order(:id)
+    @category = current_user.categories.find_by(id: params[:category_id])
+
+    if @category
+      @logs = current_user.logs
+                        .where(category_id: @category.id)
+                        .order(start_time: :desc)
+                        .limit(20)
+    else
+      redirect_to root_path, alert: "無効なカテゴリです" and return
+    end
   end
 end
