@@ -55,40 +55,12 @@
   <% if @logs.present? %>
     <ul class="divide-y divide-gray-200 rounded-xl border border-gray-200 bg-white">
       <% @logs.each do |log| %>
-        <li class="px-4 py-3 flex items-center gap-3">
-          <%# 左：日付と時間帯 %>
-          <div class="flex-1 min-w-0">
-            <div class="text-base text-gray-900 font-medium">
-              <%= log.start_time&.strftime("%Y年%-m月%-d日") %>
-            </div>
-          </div>
-
-          <%# 学習時間（◯時間◯分）%%>
-          <div class="shrink-0 text-right">
-            <div class="text-xs text-gray-500">学習時間</div>
-            <div class="font-semibold"><%= minutes_to_ja(log.duration) %></div>
-          </div>
-
-          <%# 三点リーダ（編集・削除） %>
-          <button type="button"
-                  class="p-2 rounded hover:bg-gray-100 ml-auato"
-                  title="メニュー"
-                  aria-haspopup="menu"
-                  data-kebab-button
-                  data-edit-url="<%= edit_log_path(log) %>"
-                  data-delete-url="<%= log_path(log) %>"
-                  data-name="<%= log.start_time&.strftime("%Y年%-m月%-d日") %> のログ">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
-                 fill="currentColor" class="w-5 h-5">
-              <path d="M6.25 10a1.25 1.25 0 11-2.5 0 1.25 1.25 0 012.5 0zM11.25 10a1.25 1.25 0 11-2.5 0 1.25 1.25 0 012.5 0zM16.25 10a1.25 1.25 0 11-2.5 0 1.25 1.25 0 012.5 0z"/>
-            </svg>
-          </button>
-        </li>
+        <%= render "logs/log", log: log %>
       <% end %>
     </ul>
   <% else %>
     <div class="rounded-xl border border-dashed p-8 text-center text-gray-600 bg-white">
-      このカテゴリの学習記録はまだありません。タイマーで「開始」して記録しましょう。
+      <p>このカテゴリの学習記録はまだありません。<br>タイマーで「開始」して記録しましょう。</p>
     </div>
   <% end %>
 </section>
