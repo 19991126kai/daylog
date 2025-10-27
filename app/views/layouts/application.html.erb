@@ -25,7 +25,7 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body class="min-h-screen bg-gray-50 text-gray-900">
+  <body class="min-h-screen bg-gray-100 text-gray-800">
     <%# --- ヘッダーを使うページ: TOP と Deviseの new (ログイン/新規登録) --- %>
     <% use_header =
          (controller_name == "home" && action_name == "index") ||
@@ -34,7 +34,7 @@
 
     <% if use_header %>
       <%= render "layouts/header" %>
-      <main class="mx-auto max-w-6xl p-6">
+      <main>
         <%= yield %>
       </main>
 
