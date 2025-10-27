@@ -1,31 +1,121 @@
-<section class="py-12 px-4 max-w-3xl mx-auto">
-  <div class="max-w-5xl mx-auto bg-white p-8 rounded shadow-md">
-    <h2 class="text-3xl font-bold text-blue-900 mb-8 border-b pb-2">カテゴリ一覧</h2>
+<!-- app/views/categories/index.html.erb -->
+<div class="max-w-3xl mx-auto px-4">
+  <h2 class="text-2xl font-bold text-blue-900 my-6 border-b pb-2">記録する</h2>
+  <p class="text-xl font-bold my-10">おかえりなさい🙌<br>今日は何を学習しますか？</p>
 
-    <% if @categories.present? %>
-      <div class="space-y-4">
-        <% @categories.each do |category| %>
-          <div class="bg-gray-50 border border-gray-200 p-4 rounded shadow-sm flex items-center justify-between">
-            <p class="text-lg font-semibold text-gray-700"><%= category.name %></p>
+  <% if @categories.any? %>
+    <ul class="space-y-4">
+      <% @categories.each do |c| %>
+        <li class="rounded-xl bg-white hover:bg-gray-200 hover:cursor-pointer transition">
+          <div class="flex items-center justify-between">
+            <!-- 左：タイトルエリアをクリック＝記録開始（GET /logs/new?category_id=...） -->
+            <%= form_with url: timer_path, method: :get, local: true, class: "flex-1" do %>
+              <%= hidden_field_tag :category_id, c.id %>
+              <button type="submit"
+                      class="py-5 px-5 w-full text-left font-medium hover:cursor-pointer">
+                <%= c.name %>
+              </button>
+            <% end %>
 
-            <div class="flex gap-2">
-              <%= link_to edit_category_path(category), class: "inline-flex items-center px-3 py-1 text-sm font-medium text-white bg-blue-600 rounded hover:bg-blue-700 transition" do %>
-                <span class="material-symbols-outlined mr-1 text-sm">edit</span> 編集
-              <% end %>
-
-              <%= link_to category_path(category), data: { turbo_method: :delete, turbo_confirm: "本当に削除しますか？" }, class: "inline-flex items-center px-3 py-1 text-sm font-medium text-white bg-red-600 rounded hover:bg-red-700 transition" do %>
-                <span class="material-symbols-outlined mr-1 text-sm">delete</span> 削除
-              <% end %>
-            </div>
+            <!-- 右：三点リーダ（ここから編集/削除を選択） -->
+            <button type="button"
+                    class="p-2 rounded hover:bg-gray-100"
+                    title="メニュー"
+                    aria-haspopup="menu"
+                    data-kebab-button
+                    data-edit-url="<%= edit_category_path(c) %>"
+                    data-delete-url="<%= (c.respond_to?(:is_default) && c.is_default?) ? '' : category_path(c) %>"
+                    data-name="<%= c.name %>">
+              <!-- 横向き 3点 -->
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                   fill="currentColor" class="w-5 h-5">
+                <path d="M6.25 10a1.25 1.25 0 11-2.5 0 1.25 1.25 0 012.5 0zM11.25 10a1.25 1.25 0 11-2.5 0 1.25 1.25 0 012.5 0zM16.25 10a1.25 1.25 0 11-2.5 0 1.25 1.25 0 012.5 0z"/>
+              </svg>
+            </button>
           </div>
-        <% end %>
-      </div>
-    <% else %>
-      <p class="text-gray-600">カテゴリがまだ登録されていません。</p>
-    <% end %>
-
-    <div class="mt-8 text-left">
-      <%= link_to "カテゴリを追加", new_category_path, class: "bg-blue-900 font-bold text-white py-2 px-6 rounded hover:bg-blue-800 transition inline-flex items-center gap-2" %>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <div class="rounded-xl border border-dashed p-10 text-center text-gray-600 bg-white">
+      <p class="mb-3">カテゴリがありません</p>
+      <p class="text-sm">カテゴリを追加して学習の記録をはじめましょう</p>
     </div>
+  <% end %>
+
+  <!-- 「未分類で記録する」ボタン -->
+  <div class="flex justify-center mt-6">
+    <%= link_to "未分類で記録する", timer_path, class: "text-sm underline text-gray-700" %>
   </div>
-</section>
+
+  <!-- 「カテゴリを追加する」ボタン -->
+  <div class="flex justify-center mt-8">
+    <%= link_to "カテゴリを追加する", new_category_path,
+          class: "rounded-xl border border-gray-400  px-6 py-3 text-base hover:bg-gray-200 transition" %>
+  </div>
+</div>
+
+<!-- ===== バニラJS：共通“浮遊メニュー”（position: fixedで行の高さは変わりません） ===== -->
+<script>
+(function () {
+  const CSRF = "<%= form_authenticity_token %>";
+
+  function ensureMenu() {
+    let m = document.getElementById("floating-kebab-menu");
+    if (!m) {
+      m = document.createElement("div");
+      m.id = "floating-kebab-menu";
+      m.className = "hidden border border-gray-200 bg-white rounded-lg shadow w-40 p-1";
+      m.style.position = "fixed"; // レイアウトに影響しない
+      document.body.appendChild(m);
+    }
+    return m;
+  }
+
+  function buildMenuHTML(editUrl, deleteUrl, name) {
+    const edit = `<a href="${editUrl}" class="block px-3 py-2 text-sm hover:bg-gray-50" role="menuitem">編集</a>`;
+    const del = deleteUrl
+      ? `<form method="post" action="${deleteUrl}" class="block" role="menuitem"
+               onsubmit="return confirm('${name} を削除します。よろしいですか？')">
+           <input type="hidden" name="authenticity_token" value="${CSRF}">
+           <input type="hidden" name="_method" value="delete">
+           <button type="submit" class="w-full text-left px-3 py-2 text-sm hover:bg-gray-50">削除</button>
+         </form>`
+      : `<span class="block px-3 py-2 text-sm text-gray-400 select-none" role="menuitem">削除</span>`;
+    return edit + del;
+  }
+
+  let openBtn = null;
+
+  document.addEventListener("click", (e) => {
+    const btn = e.target.closest("[data-kebab-button]");
+    const menu = ensureMenu();
+
+    // 外側クリック → 閉じる
+    if (!btn) {
+      if (!menu.classList.contains("hidden")) menu.classList.add("hidden");
+      openBtn = null;
+      return;
+    }
+
+    // 内容差し替え
+    menu.innerHTML = buildMenuHTML(
+      btn.getAttribute("data-edit-url"),
+      btn.getAttribute("data-delete-url"),
+      btn.getAttribute("data-name") || ""
+    );
+
+    // 位置：ボタン直下・右寄せ。画面外に出ないよう補正
+    const r = btn.getBoundingClientRect();
+    const top = r.bottom + 6;
+    menu.style.top = top + "px";
+    menu.classList.remove("hidden");
+    const mw = menu.offsetWidth || 160;
+    const left = Math.min(Math.max(8, r.right - mw), window.innerWidth - mw - 8);
+    menu.style.left = left + "px";
+
+    openBtn = btn;
+  });
+
+})();
+</script>
