@@ -4,8 +4,8 @@ class ApplicationController < ActionController::Base
 
   private
 
-  # ログイン後はタイマーページにリダイレクトさせる
+  # ログイン後は「記録する」にリダイレクトさせる
   def after_sign_in_path_for(resource)
-    timer_path
+    categories_path
   end
 end
