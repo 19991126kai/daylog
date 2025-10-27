@@ -5,7 +5,7 @@ Daylog は、学習時間を記録し、SNSで共有することで習慣化を�
 「学習管理とシェアをもっとスムーズに行いたい」という自身の課題から開発しました。
 
 アプリURL  
-https://daylog-x72d.onrender.com/timer  
+https://daylog-x72d.onrender.com/  
 
 ## 🎯 開発背景
 学習の習慣化と、継続や成長を採用担当者へアピールすることを目的に、日々の学習内容をX（旧Twitter）に投稿していました。  
