@@ -8,7 +8,7 @@
 <% end %>
 
 <section class="max-w-3xl mx-auto px-4">
-  <h2 class="text-2xl font-bold text-blue-900 my-6 border-b border-blue-900 pb-2"><%= @category.name %></h2>
+  <h2 id="category-name" class="text-2xl font-bold text-blue-900 my-6 border-b border-blue-900 pb-2"><%= @category.name %></h2>
   <p class="text-center text-gray-600 mb-6">ポモドーロ・テクニックを使って集中しよう☕<br>開始ボタンでタイマースタート</p>
   <%= form_with model: @log, url: logs_path, method: :post, local: true, class: "w-full max-w-md mb-8 mx-auto", id: "timer-form" do |f| %>
     <div class="mb-6">
@@ -54,15 +54,16 @@
   <div class="text-center mb-4 text-gray-700 outlint-gray-300 p-4 rounded bg-white border border-gray-200">
     <p class="text-gray-600 mb-6">今日の頑張りをシェアしよう📣</p>
     <div class="mb-4">
-      <p>本日の学習時間: <span class="font-bold text-blue-900"><%= @today_total_duration / 60 %></span>時間
-                      <span class="font-bold text-blue-900"><%= @today_total_duration % 60 %></span>分</p>
-      <p>これまでの累計: <span class="font-bold text-blue-900"><%= @total_duration / 60 %></span>時間
-                      <span class="font-bold text-blue-900"><%= @total_duration % 60 %></span>分</p>
+      本日の学習時間: 
+        <span id="daily-hour" class="font-bold text-blue-900"><%= @today_total_duration / 60 %></span>時間
+        <span id="daily-min" class="font-bold text-blue-900"><%= @today_total_duration % 60 %></span>分
+      <br>
+      これまでの累計: 
+        <span id="cumulative-hour" class="font-bold text-blue-900"><%= @total_duration / 60 %></span>時間
+        <span id="cumulative-min" class="font-bold text-blue-900"><%= @total_duration % 60 %></span>分
     </div>
-    <button>
-      <%= link_to share_path, class: "inline-block mb-4 bg-black text-white font-semibold py-2 px-4 rounded hover:bg-blue-800 hover:cursor-pointer transition" do %>
-        <i class="devicon-twitter-original mr-2"></i>シェアする
-      <% end %>
+    <button id="btn-open-x" class="mb-4 bg-black text-white font-semibold py-2 px-4 rounded hover:bg-blue-800 hover:cursor-pointer transition">
+      <i class="devicon-twitter-original mr-2"></i>シェアする
     </button>
   </div>
 </section>
@@ -375,76 +376,115 @@
   });
 
   (function () {
-  const CSRF = "<%= form_authenticity_token %>";
+    const CSRF = "<%= form_authenticity_token %>";
 
-  function ensureMenu() {
-    let m = document.getElementById("floating-kebab-menu");
-    if (!m) {
-      m = document.createElement("div");
-      m.id = "floating-kebab-menu";
-      m.className = "hidden border border-gray-200 bg-white rounded-lg shadow w-40 p-1";
-      m.style.position = "fixed"; // レイアウトに影響しない
-      document.body.appendChild(m);
-    }
-    return m;
-  }
-
-  function buildMenuHTML(editUrl, deleteUrl, name) {
-    return `
-      <a href="${editUrl}" class="block px-3 py-2 text-sm hover:bg-gray-50" role="menuitem">編集</a>
-      <form method="post" action="${deleteUrl}" class="block" role="menuitem"
-            onsubmit="return confirm('${name} を削除します。よろしいですか？')">
-        <input type="hidden" name="authenticity_token" value="${CSRF}">
-        <input type="hidden" name="_method" value="delete">
-        <button type="submit" class="w-full text-left px-3 py-2 text-sm hover:bg-gray-50">削除</button>
-      </form>
-    `;
-  }
-
-  let openBtn = null;
-
-  document.addEventListener("click", (e) => {
-    const btn = e.target.closest("[data-kebab-button]");
-    const menu = ensureMenu();
-
-    // 外側クリック → 閉じる
-    if (!btn) {
-      if (!menu.classList.contains("hidden")) menu.classList.add("hidden");
-      openBtn = null;
-      return;
+    function ensureMenu() {
+      let m = document.getElementById("floating-kebab-menu");
+      if (!m) {
+        m = document.createElement("div");
+        m.id = "floating-kebab-menu";
+        m.className = "hidden border border-gray-200 bg-white rounded-lg shadow w-40 p-1";
+        m.style.position = "fixed"; // レイアウトに影響しない
+        document.body.appendChild(m);
+      }
+      return m;
     }
 
-    // 同じボタン → トグル閉じ
-    if (openBtn === btn && !menu.classList.contains("hidden")) {
-      menu.classList.add("hidden"); openBtn = null; return;
+    function buildMenuHTML(editUrl, deleteUrl, name) {
+      return `
+        <a href="${editUrl}" class="block px-3 py-2 text-sm hover:bg-gray-50" role="menuitem">編集</a>
+        <form method="post" action="${deleteUrl}" class="block" role="menuitem"
+              onsubmit="return confirm('${name} を削除します。よろしいですか？')">
+          <input type="hidden" name="authenticity_token" value="${CSRF}">
+          <input type="hidden" name="_method" value="delete">
+          <button type="submit" class="w-full text-left px-3 py-2 text-sm hover:bg-gray-50">削除</button>
+        </form>
+      `;
     }
 
-    // 内容差し替え
-    menu.innerHTML = buildMenuHTML(
-      btn.getAttribute("data-edit-url"),
-      btn.getAttribute("data-delete-url"),
-      btn.getAttribute("data-name") || "このログ"
-    );
+    let openBtn = null;
 
-    // 位置：ボタン直下・右寄せ（画面外は補正）
-    const r = btn.getBoundingClientRect();
-    const top = r.bottom + 6;
-    menu.style.top = top + "px";
-    menu.classList.remove("hidden");
-    const mw = menu.offsetWidth || 160;
-    const left = Math.min(Math.max(8, r.right - mw), window.innerWidth - mw - 8);
-    menu.style.left = left + "px";
+    document.addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-kebab-button]");
+      const menu = ensureMenu();
 
-    openBtn = btn;
+      // 外側クリック → 閉じる
+      if (!btn) {
+        if (!menu.classList.contains("hidden")) menu.classList.add("hidden");
+        openBtn = null;
+        return;
+      }
+
+      // 同じボタン → トグル閉じ
+      if (openBtn === btn && !menu.classList.contains("hidden")) {
+        menu.classList.add("hidden"); openBtn = null; return;
+      }
+
+      // 内容差し替え
+      menu.innerHTML = buildMenuHTML(
+        btn.getAttribute("data-edit-url"),
+        btn.getAttribute("data-delete-url"),
+        btn.getAttribute("data-name") || "このログ"
+      );
+
+      // 位置：ボタン直下・右寄せ（画面外は補正）
+      const r = btn.getBoundingClientRect();
+      const top = r.bottom + 6;
+      menu.style.top = top + "px";
+      menu.classList.remove("hidden");
+      const mw = menu.offsetWidth || 160;
+      const left = Math.min(Math.max(8, r.right - mw), window.innerWidth - mw - 8);
+      menu.style.left = left + "px";
+
+      openBtn = btn;
+    });
+
+    ["keydown", "scroll", "resize"].forEach((ev) => {
+      window.addEventListener(ev, (e) => {
+        if (ev === "keydown" && e.key !== "Escape") return;
+        const m = document.getElementById("floating-kebab-menu");
+        if (m) m.classList.add("hidden");
+        openBtn = null;
+      }, { passive: true });
+    });
+  })();
+
+  const catName = document.getElementById("share-category");
+  const btnOpenX = document.getElementById("btn-open-x");
+
+  const today = () => {
+    const date = new Date();
+    // const year = date.getFullYear();
+    const month = String(date.getMonth() + 1);
+    const day = String(date.getDate());
+    const days = ["日", "月", "火", "水", "木", "金", "土"]; // 曜日配列
+    const weekday = days[date.getDay()];
+    return `${month}/${day}(${weekday})`;
+  };
+
+  // ポストする文章作成
+  const buildPostText = () => {
+    const dateText = today();
+    const catNameText = document.getElementById("category-name").textContent;
+    const dailyText = document.getElementById("daily-hour").textContent + "時間" + 
+                      document.getElementById("daily-min").textContent + "分";
+    const cumText   = document.getElementById("cumulative-hour").textContent + "時間" + 
+                      document.getElementById("cumulative-min").textContent + "分";
+
+    return `【${dateText} 学習記録】\n✅内容：${catNameText}\n\n💡学んだこと\n・\n・\n・\n\n⏰学習時間\n${dailyText} (累計:${cumText})\n#Daylog`;
+  };
+
+  // X投稿画面表示
+  const openXIntent = () => {
+    const text = buildPostText();
+    const intent = `https://x.com/intent/Post?text=${encodeURIComponent(text)}`;
+    window.open(intent, "_blank", "noopener,noreferrer,width=600,height=600");
+
+  };
+
+  // Xポストボタンクリック
+  btnOpenX.addEventListener("click", (e) => {
+    e.preventDefault();
+    openXIntent();
   });
-
-  ["keydown", "scroll", "resize"].forEach((ev) => {
-    window.addEventListener(ev, (e) => {
-      if (ev === "keydown" && e.key !== "Escape") return;
-      const m = document.getElementById("floating-kebab-menu");
-      if (m) m.classList.add("hidden");
-      openBtn = null;
-    }, { passive: true });
-  });
-})();
 </script>
