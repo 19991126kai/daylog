@@ -64,6 +64,7 @@ https://github.com/user-attachments/assets/89e2e0ba-2539-4a9f-8eea-d9f6fe798f8b
 ```mermaid
 erDiagram
   users ||--o{ categories : "1 user has many categories"
+  users ||--o{ logs: "1 user has many logs"
   categories ||--o{ logs: "1 category has many logs"
 
   users {
