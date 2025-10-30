@@ -49,15 +49,29 @@
   </div>
 </section>
 
-<%# 学習記録一覧（選択したカテゴリのみ） %>
+<%# 学習時間サマリ %>
 <section class="max-w-3xl mx-auto px-4 my-10">
-  <h2 class="text-2xl font-bold text-blue-900 my-6 border-b border-blue-900 pb-2"><%= @category.name %>の学習記録</h2>
-  <div class="mb-4 text-gray-700">
-    <p>本日の学習時間: <span class="font-bold text-blue-900"><%= @today_total_duration %></span> 分</p>
-    <p>これまでの累計: <span class="font-bold text-blue-900"><%= @total_duration %></span> 分</p>
+  <div class="text-center mb-4 text-gray-700 outlint-gray-300 p-4 rounded bg-white border border-gray-200">
+    <p class="text-gray-600 mb-6">今日の頑張りをシェアしよう📣</p>
+    <div class="mb-4">
+      <p>本日の学習時間: <span class="font-bold text-blue-900"><%= @today_total_duration / 60 %></span>時間
+                      <span class="font-bold text-blue-900"><%= @today_total_duration % 60 %></span>分</p>
+      <p>これまでの累計: <span class="font-bold text-blue-900"><%= @total_duration / 60 %></span>時間
+                      <span class="font-bold text-blue-900"><%= @total_duration % 60 %></span>分</p>
+    </div>
+    <button>
+      <%= link_to share_path, class: "inline-block mb-4 bg-black text-white font-semibold py-2 px-4 rounded hover:bg-blue-800 hover:cursor-pointer transition" do %>
+        <i class="devicon-twitter-original mr-2"></i>シェアする
+      <% end %>
+    </button>
   </div>
+</section>
+
+<%# ログ一覧 %>
+<section class="max-w-3xl mx-auto px-4 my-10">
+  <h2 class="text-2xl font-bold text-blue-900 my-6 border-b border-blue-900 pb-2">学習記録</h2>
   <button>
-    <%= link_to "手動で追加する" , new_log_path(category_id: @category.id),
+    <%= link_to "手動で追加する", new_log_path(category_id: @category.id),
       class: "inline-block mb-4 bg-blue-900 text-white font-semibold py-2 px-4 rounded hover:bg-blue-800 hover:cursor-pointer transition" %>
   </button>
   <% if @logs.present? %>
