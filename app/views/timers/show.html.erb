@@ -28,11 +28,11 @@
   </div>
   <div id="timer" class="flex flex-col items-center gap-8">
     <%# タイマー秒数表示 %>
-    <div class="font-bold tabular-nums tracking-wider text-9xl my-10">
+    <div class="font-bold tabular-nums tracking-wider text-8xl my-5">
       <span id="timer-display">25:00</span>
     </div>
     <%# タイマー操作ボタン %>
-    <div class="flex items-center gap-4 mb-5">
+    <div class="flex items-center gap-4">
       <button id="btn-start"
               class="bg-blue-900 text-white font-semibold py-3 px-8 rounded hover:bg-blue-800 hover:cursor-pointer transition">
         開始
@@ -52,6 +52,10 @@
 <%# 学習記録一覧（選択したカテゴリのみ） %>
 <section class="max-w-3xl mx-auto px-4 my-10">
   <h2 class="text-2xl font-bold text-blue-900 my-6 border-b border-blue-900 pb-2"><%= @category.name %>の学習記録</h2>
+  <div class="mb-4 text-gray-700">
+    <p>本日の学習時間: <span class="font-bold text-blue-900"><%= @today_total_duration %></span> 分</p>
+    <p>これまでの累計: <span class="font-bold text-blue-900"><%= @total_duration %></span> 分</p>
+  </div>
   <button>
     <%= link_to "手動で追加する" , new_log_path(category_id: @category.id),
       class: "inline-block mb-4 bg-blue-900 text-white font-semibold py-2 px-4 rounded hover:bg-blue-800 hover:cursor-pointer transition" %>
