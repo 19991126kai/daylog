@@ -373,9 +373,7 @@
         alert("タイマーが動作中はページを移動できません。");
       }
     });
-  });
 
-  (function () {
     const CSRF = "<%= form_authenticity_token %>";
 
     function ensureMenu() {
@@ -447,44 +445,44 @@
         openBtn = null;
       }, { passive: true });
     });
-  })();
 
-  const catName = document.getElementById("share-category");
-  const btnOpenX = document.getElementById("btn-open-x");
+    const catName = document.getElementById("share-category");
+    const btnOpenX = document.getElementById("btn-open-x");
 
-  const today = () => {
-    const date = new Date();
-    // const year = date.getFullYear();
-    const month = String(date.getMonth() + 1);
-    const day = String(date.getDate());
-    const days = ["日", "月", "火", "水", "木", "金", "土"]; // 曜日配列
-    const weekday = days[date.getDay()];
-    return `${month}/${day}(${weekday})`;
-  };
+    const today = () => {
+      const date = new Date();
+      // const year = date.getFullYear();
+      const month = String(date.getMonth() + 1);
+      const day = String(date.getDate());
+      const days = ["日", "月", "火", "水", "木", "金", "土"]; // 曜日配列
+      const weekday = days[date.getDay()];
+      return `${month}/${day}(${weekday})`;
+    };
 
-  // ポストする文章作成
-  const buildPostText = () => {
-    const dateText = today();
-    const catNameText = document.getElementById("category-name").textContent;
-    const dailyText = document.getElementById("daily-hour").textContent + "時間" + 
-                      document.getElementById("daily-min").textContent + "分";
-    const cumText   = document.getElementById("cumulative-hour").textContent + "時間" + 
-                      document.getElementById("cumulative-min").textContent + "分";
+    // ポストする文章作成
+    const buildPostText = () => {
+      const dateText = today();
+      const catNameText = document.getElementById("category-name").textContent;
+      const dailyText = document.getElementById("daily-hour").textContent + "時間" + 
+                        document.getElementById("daily-min").textContent + "分";
+      const cumText   = document.getElementById("cumulative-hour").textContent + "時間" + 
+                        document.getElementById("cumulative-min").textContent + "分";
 
-    return `【${dateText} 学習記録】\n✅内容：${catNameText}\n\n💡学んだこと\n・\n・\n・\n\n⏰学習時間\n${dailyText} (累計:${cumText})\n#Daylog`;
-  };
+      return `【${dateText} 学習記録】\n✅内容：${catNameText}\n\n💡学んだこと\n・\n・\n・\n\n⏰学習時間\n${dailyText} (累計:${cumText})\n#Daylog`;
+    };
 
-  // X投稿画面表示
-  const openXIntent = () => {
-    const text = buildPostText();
-    const intent = `https://x.com/intent/Post?text=${encodeURIComponent(text)}`;
-    window.open(intent, "_blank", "noopener,noreferrer,width=600,height=600");
+    // X投稿画面表示
+    const openXIntent = () => {
+      const text = buildPostText();
+      const intent = `https://x.com/intent/Post?text=${encodeURIComponent(text)}`;
+      window.open(intent, "_blank", "noopener,noreferrer,width=600,height=600");
 
-  };
+    };
 
-  // Xポストボタンクリック
-  btnOpenX.addEventListener("click", (e) => {
-    e.preventDefault();
-    openXIntent();
+    // Xポストボタンクリック
+    btnOpenX.addEventListener("click", (e) => {
+      e.preventDefault();
+      openXIntent();
+    });
   });
 </script>
