@@ -11,6 +11,7 @@ class LogsController < ApplicationController
   def new
     now = Time.current.change(sec: 0)
     @log = current_user.logs.build(
+      category_id: params[:category_id],
       start_time: now - 25.minutes,
       end_time: now
     )
@@ -20,7 +21,7 @@ class LogsController < ApplicationController
     @log = current_user.logs.build(log_params)
     @log.duration = calc_duration(@log.start_time, @log.end_time)
     if @log.save
-      redirect_to logs_path, notice: "ログを作成しました"
+      redirect_to timer_path(category_id: @log.category_id), notice: "ログを作成しました"
     else
       render :new, status: :unprocessable_entity
     end
@@ -45,7 +46,7 @@ class LogsController < ApplicationController
   def destroy
     @log = current_user.logs.find(params[:id])
     @log.destroy
-    redirect_to logs_path
+    redirect_to request.referrer || root_path
   end
 
   private

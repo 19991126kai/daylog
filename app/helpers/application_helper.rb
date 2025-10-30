@@ -6,7 +6,7 @@ module ApplicationHelper
     # アクティブ or 非アクティブで分岐
     if active_for?(path, match)
       # 現在のページ → 背景固定、hover無効
-      active = "bg-blue-300 font-medium"
+      active = "bg-blue-300 font-medium text-gray-800"
       hover  = ""
     else
       active = "text-white"

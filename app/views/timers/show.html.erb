@@ -1,48 +1,93 @@
-<section class="py-4 px-4 max-w-5xl mx-auto">
-  <div class="w-full bg-white p-10 rounded shadow-md">
-    <h2 class="text-3xl font-bold text-blue-900 mb-8 border-b pb-2">記録する</h2>
-    <%= form_with model: @log, url: logs_path, method: :post, local: true, class: "w-full max-w-md mb-8 mx-auto", id: "timer-form" do |f| %>
-      <div class="mb-6">
-        <%= f.label :category_id, "カテゴリ", class: "block text-gray-700 text-sm font-semibold mb-2" %>
-        <%= f.collection_select :category_id, @categories, :id, :name,
-              { include_blank: "未分類" },
-              class: "w-full px-4 py-2 border border-gray-300 rounded" %>
-        <%= hidden_field_tag "log[start_time]", "", id: "log-start-time" %>
-        <%= hidden_field_tag "log[end_time]", "", id: "log-end-time" %>
-        <%= hidden_field_tag "log[duration]", "", id: "log-duration" %>
-      </div>
-    <% end %>
-    <div class="flex w-1/2 mx-auto mb-6 border-b border-gray-200 select-none">
-      <div id="work-tab" class="active w-1/2 text-center py-2 font-semibold text-blue-900 border-b-2 border-blue-900 cursor-pointer">
-        学習
-      </div>
-      <div id="break-tab" class="w-1/2 text-center py-2 font-semibold text-gray-500 hover:text-blue-800 cursor-pointer">
-        休憩
-      </div>
+<%# 戻るボタン %>
+<%= link_to categories_path,
+  class: "inline-flex items-center justify-center w-10 h-10 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-100 hover:border-gray-400 transition",
+  aria: { label: "戻る" } do %>
+  <svg class="w-5 h-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+    <path d="M7.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4A1 1 0 018.707 6.293L6.414 8.586H17a1 1 0 110 2H6.414l2.293 2.293a1 1 0 010 1.414z"/>
+  </svg>
+<% end %>
+
+<section class="max-w-3xl mx-auto px-4">
+  <h2 id="category-name" class="text-2xl font-bold text-blue-900 my-6 border-b border-blue-900 pb-2"><%= @category.name %></h2>
+  <p class="text-center text-gray-600 mb-6">ポモドーロ・テクニックを使って集中しよう☕<br>開始ボタンでタイマースタート</p>
+  <%= form_with model: @log, url: logs_path, method: :post, local: true, class: "w-full max-w-md mb-8 mx-auto", id: "timer-form" do |f| %>
+    <div class="mb-6">
+      <%= hidden_field_tag "log[category_id]", @category.id %>
+      <%= hidden_field_tag "log[start_time]", "", id: "log-start-time" %>
+      <%= hidden_field_tag "log[end_time]", "", id: "log-end-time" %>
+      <%= hidden_field_tag "log[duration]", "", id: "log-duration" %>
     </div>
-    <div id="timer" class="flex flex-col items-center gap-8">
-      <%# タイマー秒数表示 %>
-      <div class="font-bold tabular-nums tracking-wider text-9xl my-10">
-        <span id="timer-display">25:00</span>
-      </div>
-      <%# タイマー操作ボタン %>
-      <div class="flex items-center gap-4 mb-5">
-        <button id="btn-start"
-                class="bg-blue-900 text-white font-semibold py-3 px-8 rounded hover:bg-blue-800 hover:cursor-pointer transition">
-          開始
-        </button>
-        <button id="btn-pause"
-                class="hidden bg-gray-200 text-gray-700 font-semibold py-3 px-8 rounded hover:bg-gray-300 hover:cursor-pointer transition">
-          一時停止
-        </button>
-        <button id="btn-finish"
-                class="hidden bg-emerald-600 text-white font-semibold py-3 px-8 rounded hover:bg-emerald-700 hover:cursor-pointer transition">
-          終了
-        </button>
-      </div>
+  <% end %>
+  <div class="flex w-1/2 mx-auto mb-6 border-b border-gray-200 select-none">
+    <div id="work-tab" class="active w-1/2 text-center py-2 font-semibold text-blue-900 border-b-2 border-blue-900 cursor-pointer">
+      学習
+    </div>
+    <div id="break-tab" class="w-1/2 text-center py-2 font-semibold text-gray-500 hover:text-blue-800 cursor-pointer">
+      休憩
+    </div>
+  </div>
+  <div id="timer" class="flex flex-col items-center gap-8">
+    <%# タイマー秒数表示 %>
+    <div class="font-bold tabular-nums tracking-wider text-8xl my-5">
+      <span id="timer-display">25:00</span>
+    </div>
+    <%# タイマー操作ボタン %>
+    <div class="flex items-center gap-4">
+      <button id="btn-start"
+              class="bg-blue-900 text-white font-semibold py-3 px-8 rounded hover:bg-blue-800 hover:cursor-pointer transition">
+        開始
+      </button>
+      <button id="btn-pause"
+              class="hidden bg-gray-200 text-gray-700 font-semibold py-3 px-8 rounded hover:bg-gray-300 hover:cursor-pointer transition">
+        一時停止
+      </button>
+      <button id="btn-finish"
+              class="hidden bg-emerald-600 text-white font-semibold py-3 px-8 rounded hover:bg-emerald-700 hover:cursor-pointer transition">
+        終了
+      </button>
     </div>
   </div>
 </section>
+
+<%# 学習時間サマリ %>
+<section class="max-w-3xl mx-auto px-4 my-10">
+  <div class="text-center mb-4 text-gray-700 outlint-gray-300 p-4 rounded bg-white border border-gray-200">
+    <p class="text-gray-600 mb-6">今日の頑張りをシェアしよう📣</p>
+    <div class="mb-4">
+      本日の学習時間: 
+        <span id="daily-hour" class="font-bold text-blue-900"><%= @today_total_duration / 60 %></span>時間
+        <span id="daily-min" class="font-bold text-blue-900"><%= @today_total_duration % 60 %></span>分
+      <br>
+      これまでの累計: 
+        <span id="cumulative-hour" class="font-bold text-blue-900"><%= @total_duration / 60 %></span>時間
+        <span id="cumulative-min" class="font-bold text-blue-900"><%= @total_duration % 60 %></span>分
+    </div>
+    <button id="btn-open-x" class="mb-4 bg-black text-white font-semibold py-2 px-4 rounded hover:bg-blue-800 hover:cursor-pointer transition">
+      <i class="devicon-twitter-original mr-2"></i>シェアする
+    </button>
+  </div>
+</section>
+
+<%# ログ一覧 %>
+<section class="max-w-3xl mx-auto px-4 my-10">
+  <h2 class="text-2xl font-bold text-blue-900 my-6 border-b border-blue-900 pb-2">学習記録</h2>
+  <button>
+    <%= link_to "手動で追加する", new_log_path(category_id: @category.id),
+      class: "inline-block mb-4 bg-blue-900 text-white font-semibold py-2 px-4 rounded hover:bg-blue-800 hover:cursor-pointer transition" %>
+  </button>
+  <% if @logs.present? %>
+    <ul class="divide-y divide-gray-200 rounded-xl border border-gray-200 bg-white">
+      <% @logs.each do |log| %>
+        <%= render "logs/log", log: log %>
+      <% end %>
+    </ul>
+  <% else %>
+    <div class="rounded-xl border border-dashed p-8 text-center text-gray-600 bg-white">
+      <p>このカテゴリの学習記録はまだありません。<br>タイマーで「開始」して記録しましょう。</p>
+    </div>
+  <% end %>
+</section>
+
 <script>
   // Worker定義
   const workerSrc = `
@@ -117,7 +162,6 @@
     const startBtn = document.getElementById("btn-start");
     const pauseBtn = document.getElementById("btn-pause");
     const finishBtn = document.getElementById("btn-finish");
-    const categorySelect = document.getElementById("log_category_id");
     const form = document.getElementById("timer-form");
     const startField = document.getElementById("log-start-time");
     const endField = document.getElementById("log-end-time");
@@ -150,7 +194,6 @@
         case "done": {
           intervalId = null;
           alert("終了！");
-          categorySelect.disabled = false;
           submitLog(Date.now());
           isPaused = false;
           leftSec = DURATION_BY_MODE[currentMode()];
@@ -234,7 +277,6 @@
         return;
       }
 
-      categorySelect.disabled = false;
       startField.value  = toRailsTS(startedAt);
       endField.value = toRailsTS(endedAt);
       durationField.value = duration;
@@ -278,7 +320,6 @@
       startBtn.classList.add("hidden");
       pauseBtn.classList.remove("hidden");
       finishBtn.classList.remove("hidden");
-      categorySelect.disabled = true;
     };
 
     // UI切り替え（タイマー作動状態→初期状態）
@@ -286,7 +327,6 @@
       startBtn.classList.remove("hidden");
       pauseBtn.classList.add("hidden");
       finishBtn.classList.add("hidden");
-      categorySelect.disabled = false;
       pauseBtn.innerText = "一時停止";
       timerDisplay.classList.remove("text-gray-600");
     };
@@ -332,6 +372,117 @@
         e.preventDefault();
         alert("タイマーが動作中はページを移動できません。");
       }
+    });
+
+    const CSRF = "<%= form_authenticity_token %>";
+
+    function ensureMenu() {
+      let m = document.getElementById("floating-kebab-menu");
+      if (!m) {
+        m = document.createElement("div");
+        m.id = "floating-kebab-menu";
+        m.className = "hidden border border-gray-200 bg-white rounded-lg shadow w-40 p-1";
+        m.style.position = "fixed"; // レイアウトに影響しない
+        document.body.appendChild(m);
+      }
+      return m;
+    }
+
+    function buildMenuHTML(editUrl, deleteUrl, name) {
+      return `
+        <a href="${editUrl}" class="block px-3 py-2 text-sm hover:bg-gray-50" role="menuitem">編集</a>
+        <form method="post" action="${deleteUrl}" class="block" role="menuitem"
+              onsubmit="return confirm('${name} を削除します。よろしいですか？')">
+          <input type="hidden" name="authenticity_token" value="${CSRF}">
+          <input type="hidden" name="_method" value="delete">
+          <button type="submit" class="w-full text-left px-3 py-2 text-sm hover:bg-gray-50">削除</button>
+        </form>
+      `;
+    }
+
+    let openBtn = null;
+
+    document.addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-kebab-button]");
+      const menu = ensureMenu();
+
+      // 外側クリック → 閉じる
+      if (!btn) {
+        if (!menu.classList.contains("hidden")) menu.classList.add("hidden");
+        openBtn = null;
+        return;
+      }
+
+      // 同じボタン → トグル閉じ
+      if (openBtn === btn && !menu.classList.contains("hidden")) {
+        menu.classList.add("hidden"); openBtn = null; return;
+      }
+
+      // 内容差し替え
+      menu.innerHTML = buildMenuHTML(
+        btn.getAttribute("data-edit-url"),
+        btn.getAttribute("data-delete-url"),
+        btn.getAttribute("data-name") || "このログ"
+      );
+
+      // 位置：ボタン直下・右寄せ（画面外は補正）
+      const r = btn.getBoundingClientRect();
+      const top = r.bottom + 6;
+      menu.style.top = top + "px";
+      menu.classList.remove("hidden");
+      const mw = menu.offsetWidth || 160;
+      const left = Math.min(Math.max(8, r.right - mw), window.innerWidth - mw - 8);
+      menu.style.left = left + "px";
+
+      openBtn = btn;
+    });
+
+    ["keydown", "scroll", "resize"].forEach((ev) => {
+      window.addEventListener(ev, (e) => {
+        if (ev === "keydown" && e.key !== "Escape") return;
+        const m = document.getElementById("floating-kebab-menu");
+        if (m) m.classList.add("hidden");
+        openBtn = null;
+      }, { passive: true });
+    });
+
+    const catName = document.getElementById("share-category");
+    const btnOpenX = document.getElementById("btn-open-x");
+
+    const today = () => {
+      const date = new Date();
+      // const year = date.getFullYear();
+      const month = String(date.getMonth() + 1);
+      const day = String(date.getDate());
+      const days = ["日", "月", "火", "水", "木", "金", "土"]; // 曜日配列
+      const weekday = days[date.getDay()];
+      return `${month}/${day}(${weekday})`;
+    };
+
+    // ポストする文章作成
+    const buildPostText = () => {
+      const dateText = today();
+      const catNameText = document.getElementById("category-name").textContent;
+      const dailyText = document.getElementById("daily-hour").textContent + "時間" + 
+                        document.getElementById("daily-min").textContent + "分";
+      const cumText   = document.getElementById("cumulative-hour").textContent + "時間" + 
+                        document.getElementById("cumulative-min").textContent + "分";
+
+      return `【${dateText} 学習記録】\n✅内容：${catNameText}\n\n💡学んだこと\n・\n・\n・\n\n⏰学習時間\n${dailyText} (累計:${cumText})\n#Daylog`;
+    };
+
+    // X投稿画面表示
+    const openXIntent = () => {
+      const text = buildPostText();
+      const intent = `https://x.com/intent/Post?text=${encodeURIComponent(text)}`;
+      window.open(intent, "_blank", "noopener,noreferrer,width=600,height=600");
+
+    };
+
+    // Xポストボタンクリック
+    btnOpenX.addEventListener("click", (e) => {
+      e.preventDefault();
+      openXIntent();
     });
   });
 </script>
