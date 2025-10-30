@@ -21,7 +21,7 @@ class LogsController < ApplicationController
     @log = current_user.logs.build(log_params)
     @log.duration = calc_duration(@log.start_time, @log.end_time)
     if @log.save
-      redirect_to logs_path, notice: "ログを作成しました"
+      redirect_to timer_path(category_id: @log.category_id), notice: "ログを作成しました"
     else
       render :new, status: :unprocessable_entity
     end
