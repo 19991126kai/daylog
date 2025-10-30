@@ -52,6 +52,10 @@
 <%# 学習記録一覧（選択したカテゴリのみ） %>
 <section class="max-w-3xl mx-auto px-4 my-10">
   <h2 class="text-2xl font-bold text-blue-900 my-6 border-b border-blue-900 pb-2"><%= @category.name %>の学習記録</h2>
+  <button>
+    <%= link_to "手動で追加する" , new_log_path(category_id: @category.id),
+      class: "inline-block mb-4 bg-blue-900 text-white font-semibold py-2 px-4 rounded hover:bg-blue-800 hover:cursor-pointer transition" %>
+  </button>
   <% if @logs.present? %>
     <ul class="divide-y divide-gray-200 rounded-xl border border-gray-200 bg-white">
       <% @logs.each do |log| %>

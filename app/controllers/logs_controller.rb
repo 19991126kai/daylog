@@ -11,6 +11,7 @@ class LogsController < ApplicationController
   def new
     now = Time.current.change(sec: 0)
     @log = current_user.logs.build(
+      category_id: params[:category_id],
       start_time: now - 25.minutes,
       end_time: now
     )
