@@ -4,7 +4,8 @@ class LogsController < ApplicationController
   def index
     @logs = current_user.logs
                         .preload(:category) # N+1問題の対策でカテゴリまでpreload
-                        .order(start_time: :desc)
+                        .order(study_date: :desc)
+                        .order(id: :desc)
                         .page(params[:page]).per(10) # ページネーション
   end
 
