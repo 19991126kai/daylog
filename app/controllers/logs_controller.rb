@@ -9,21 +9,28 @@ class LogsController < ApplicationController
   end
 
   def new
-    now = Time.current.change(sec: 0)
     @log = current_user.logs.build(
       category_id: params[:category_id],
-      start_time: now - 25.minutes,
-      end_time: now
     )
   end
 
   def create
-    @log = current_user.logs.build(log_params)
-    @log.duration = params[:log][:duration].to_i
+    # フォームから手動で追加するとき
+    if params[:log][:hours].present? && params[:log][:minutes].present?
+      hours   = params[:log][:hours].to_i
+      minutes = params[:log][:minutes].to_i
+      total_minutes = (hours * 60) + minutes
+
+      @log = current_user.logs.new(log_params.merge(duration: total_minutes))
+    # タイマーを使って自動保存するとき
+    else
+      @log = current_user.logs.new(log_params)
+    end
+
     if @log.save
       redirect_to timer_path(category_id: @log.category_id), notice: "ログを作成しました"
     else
-      render :new, status: :unprocessable_entity
+      render :new, status: :unprocessable_content
     end
   end
 
