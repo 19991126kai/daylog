@@ -88,8 +88,7 @@ erDiagram
   logs {
     integer id PK
     references category FK
-    datetime start_time "学習開始時刻"
-    datetime end_time "学習終了時刻"
+    date study_date "学習日"
     integer duration "学習時間（分）"
     datetime created_at
     datetime updated_at
