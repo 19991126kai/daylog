@@ -9,6 +9,7 @@ class TimersController < ApplicationController
       @logs = current_user.logs
                         .where(category_id: @category.id)
                         .order(study_date: :desc)
+                        .order(id: :desc)
       @today_total_duration = @logs.where(study_date: Date.current).sum(:duration)
       @total_duration = @logs.sum(:duration)
     else
