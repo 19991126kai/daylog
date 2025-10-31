@@ -19,7 +19,7 @@ class LogsController < ApplicationController
 
   def create
     @log = current_user.logs.build(log_params)
-    @log.duration = calc_duration(@log.start_time, @log.end_time)
+    @log.duration = params[:log][:duration].to_i
     if @log.save
       redirect_to timer_path(category_id: @log.category_id), notice: "ログを作成しました"
     else
@@ -52,7 +52,7 @@ class LogsController < ApplicationController
   private
 
   def log_params
-    params.require(:log).permit(:category_id, :start_time, :end_time, :duration)
+    params.require(:log).permit(:category_id, :study_date, :duration)
   end
 
   def calc_duration(start_time, end_time)
