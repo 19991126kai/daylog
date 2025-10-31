@@ -4,26 +4,34 @@ class LogsController < ApplicationController
   def index
     @logs = current_user.logs
                         .preload(:category) # N+1問題の対策でカテゴリまでpreload
-                        .order(start_time: :desc)
+                        .order(study_date: :desc)
+                        .order(id: :desc)
                         .page(params[:page]).per(10) # ページネーション
   end
 
   def new
-    now = Time.current.change(sec: 0)
     @log = current_user.logs.build(
       category_id: params[:category_id],
-      start_time: now - 25.minutes,
-      end_time: now
     )
   end
 
   def create
-    @log = current_user.logs.build(log_params)
-    @log.duration = calc_duration(@log.start_time, @log.end_time)
+    # フォームから手動で追加するとき
+    if params[:log][:hours].present? && params[:log][:minutes].present?
+      hours   = params[:log][:hours].to_i
+      minutes = params[:log][:minutes].to_i
+      total_minutes = (hours * 60) + minutes
+
+      @log = current_user.logs.new(log_params.merge(duration: total_minutes))
+    # タイマーを使って自動保存するとき
+    else
+      @log = current_user.logs.new(log_params)
+    end
+
     if @log.save
       redirect_to timer_path(category_id: @log.category_id), notice: "ログを作成しました"
     else
-      render :new, status: :unprocessable_entity
+      render :new, status: :unprocessable_content
     end
   end
 
@@ -33,11 +41,15 @@ class LogsController < ApplicationController
   end
 
   def update
+    hours   = params[:log][:hours].to_i
+    minutes = params[:log][:minutes].to_i
+    total_minutes = (hours * 60) + minutes
+
     @log = current_user.logs.find(params[:id])
     @log.assign_attributes(log_params)
-    @log.duration = calc_duration(@log.start_time, @log.end_time)
+    @log.duration = total_minutes
     if @log.save
-      redirect_to logs_path
+      redirect_to timer_path(category_id: @log.category_id), notice: "ログを編集しました"
     else
       render :edit, status: :unprocessable_entity
     end
@@ -52,10 +64,6 @@ class LogsController < ApplicationController
   private
 
   def log_params
-    params.require(:log).permit(:category_id, :start_time, :end_time, :duration)
-  end
-
-  def calc_duration(start_time, end_time)
-    ((end_time - start_time) / 60).to_i
+    params.require(:log).permit(:category_id, :study_date, :duration)
   end
 end

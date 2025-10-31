@@ -19,7 +19,7 @@ class SharesController < ApplicationController
         current_user.logs.where(category_id: nil) # カテゴリが未分類のログたち
       end
 
-    @daily_minutes = scope.where(start_time: @date.all_day).sum(:duration).to_i
-    @cumulative_minutes = scope.where("start_time <= ?", @date.end_of_day).sum(:duration).to_i
+    @daily_minutes = scope.where(study_date: @date).sum(:duration).to_i
+    @cumulative_minutes = scope.where("study_date <= ?", @date).sum(:duration).to_i
   end
 end

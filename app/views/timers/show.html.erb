@@ -1,4 +1,4 @@
-<%# 戻るボタン %>
+<%# カテゴリ選択画面に戻る %>
 <%= link_to categories_path,
   class: "inline-flex items-center justify-center w-10 h-10 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-100 hover:border-gray-400 transition",
   aria: { label: "戻る" } do %>
@@ -13,8 +13,7 @@
   <%= form_with model: @log, url: logs_path, method: :post, local: true, class: "w-full max-w-md mb-8 mx-auto", id: "timer-form" do |f| %>
     <div class="mb-6">
       <%= hidden_field_tag "log[category_id]", @category.id %>
-      <%= hidden_field_tag "log[start_time]", "", id: "log-start-time" %>
-      <%= hidden_field_tag "log[end_time]", "", id: "log-end-time" %>
+      <%= hidden_field_tag "log[study_date]", "", id: "study-date" %>
       <%= hidden_field_tag "log[duration]", "", id: "log-duration" %>
     </div>
   <% end %>
@@ -163,8 +162,7 @@
     const pauseBtn = document.getElementById("btn-pause");
     const finishBtn = document.getElementById("btn-finish");
     const form = document.getElementById("timer-form");
-    const startField = document.getElementById("log-start-time");
-    const endField = document.getElementById("log-end-time");
+    const studyDateField = document.getElementById("study-date");
     const durationField = document.getElementById("log-duration");
 
     const activeClassArr   = ["active", "text-blue-900", "border-b-2", "border-blue-900"];
@@ -256,12 +254,10 @@
       return `${zeroPadding(Math.floor(sec / 60))}:${zeroPadding(sec % 60)}`
     };
 
-    // Rails用フォーマット YYYY-MM-DD HH:MM:SS
+    // Rails用フォーマット YYYY-MM-DD
     const toRailsTS = (ms) => {
       const d = new Date(ms);
-      const Y = d.getFullYear(), M = zeroPadding(d.getMonth()+1), D = zeroPadding(d.getDate());
-      const h = zeroPadding(d.getHours()), m = zeroPadding(d.getMinutes()), s = zeroPadding(d.getSeconds());
-      return `${Y}-${M}-${D} ${h}:${m}:${s}`;
+      return d.toISOString().slice(0, 10);
     };
 
     // ログ送信処理
@@ -277,8 +273,7 @@
         return;
       }
 
-      startField.value  = toRailsTS(startedAt);
-      endField.value = toRailsTS(endedAt);
+      studyDateField.value = toRailsTS(startedAt);
       durationField.value = duration;
       form.submit();
     };
