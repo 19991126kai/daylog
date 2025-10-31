@@ -40,11 +40,15 @@ class LogsController < ApplicationController
   end
 
   def update
+    hours   = params[:log][:hours].to_i
+    minutes = params[:log][:minutes].to_i
+    total_minutes = (hours * 60) + minutes
+
     @log = current_user.logs.find(params[:id])
     @log.assign_attributes(log_params)
-    @log.duration = calc_duration(@log.start_time, @log.end_time)
+    @log.duration = total_minutes
     if @log.save
-      redirect_to logs_path
+      redirect_to timer_path(category_id: @log.category_id), notice: "ログを編集しました"
     else
       render :edit, status: :unprocessable_entity
     end
@@ -60,9 +64,5 @@ class LogsController < ApplicationController
 
   def log_params
     params.require(:log).permit(:category_id, :study_date, :duration)
-  end
-
-  def calc_duration(start_time, end_time)
-    ((end_time - start_time) / 60).to_i
   end
 end
