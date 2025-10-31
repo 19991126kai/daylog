@@ -13,8 +13,6 @@
   <%= form_with model: @log, url: logs_path, method: :post, local: true, class: "w-full max-w-md mb-8 mx-auto", id: "timer-form" do |f| %>
     <div class="mb-6">
       <%= hidden_field_tag "log[category_id]", @category.id %>
-      <%= hidden_field_tag "log[start_time]", "", id: "log-start-time" %>
-      <%= hidden_field_tag "log[end_time]", "", id: "log-end-time" %>
       <%= hidden_field_tag "log[duration]", "", id: "log-duration" %>
     </div>
   <% end %>
@@ -163,8 +161,6 @@
     const pauseBtn = document.getElementById("btn-pause");
     const finishBtn = document.getElementById("btn-finish");
     const form = document.getElementById("timer-form");
-    const startField = document.getElementById("log-start-time");
-    const endField = document.getElementById("log-end-time");
     const durationField = document.getElementById("log-duration");
 
     const activeClassArr   = ["active", "text-blue-900", "border-b-2", "border-blue-900"];
@@ -277,8 +273,6 @@
         return;
       }
 
-      startField.value  = toRailsTS(startedAt);
-      endField.value = toRailsTS(endedAt);
       durationField.value = duration;
       form.submit();
     };
