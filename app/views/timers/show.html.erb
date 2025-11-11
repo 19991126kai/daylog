@@ -75,11 +75,16 @@
       class: "inline-block mb-4 bg-blue-900 text-white font-semibold py-2 px-4 rounded hover:bg-blue-800 hover:cursor-pointer transition" %>
   </button>
   <% if @logs.present? %>
-    <ul class="divide-y divide-gray-200 rounded-xl border border-gray-200 bg-white">
-      <% @logs.each do |log| %>
-        <%= render "logs/log", log: log %>
-      <% end %>
-    </ul>
+    <turbo-frame id="logs_frame">
+      <ul class="divide-y divide-gray-200 rounded-xl border border-gray-200 bg-white">
+        <% @logs.each do |log| %>
+          <%= render "logs/log", log: log %>
+        <% end %>
+      </ul>
+      <div class="flex justify-center my-4">
+        <%= paginate @logs %>
+      </div>
+    </turbo-frame>
   <% else %>
     <div class="rounded-xl border border-dashed p-8 text-center text-gray-600 bg-white">
       <p>このカテゴリの学習記録はまだありません。<br>タイマーで「開始」して記録しましょう。</p>
