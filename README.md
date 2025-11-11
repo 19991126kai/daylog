@@ -43,6 +43,8 @@ https://daylog-x72d.onrender.com/
 ![Prettier](https://img.shields.io/badge/Prettier-F7B93E?style=flat&logo=prettier&logoColor=black)
 ![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?style=flat&logo=githubactions&logoColor=white)
 ![RSpec](https://img.shields.io/badge/RSpec-FF0000?style=flat&logo=rubyonrails&logoColor=white)
+[![bullet gem](https://img.shields.io/gem/v/bullet?style=flat&logo=rubygems&logoColor=white&label=bullet)](https://rubygems.org/gems/bullet)
+[![kaminari](https://img.shields.io/gem/v/kaminari?style=flat&logo=rubygems&logoColor=white&label=kaminari)](https://rubygems.org/gems/kaminari)
 
 ## 📝 アプリ機能
 
