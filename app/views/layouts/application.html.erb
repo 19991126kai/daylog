@@ -36,6 +36,12 @@
     <% if use_header %>
       <%= render "layouts/header" %>
       <main>
+        <% flash.each do |key, message| %>
+            <% color = key == "notice" ? "bg-green-400" : "bg-red-400" %>
+            <div class="text-white px-4 py-2 mb-4 <%= color %>">
+              <%= message %>
+            </div>
+          <% end %>
         <%= yield %>
       </main>
 
