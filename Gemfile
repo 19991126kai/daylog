@@ -51,6 +51,10 @@ gem "annotate"
 
 gem "tailwindcss-rails", "~> 4.3"
 
+# 多言語対応
+gem "devise-i18n"
+gem "rails-i18n"
+
 group :production do
   gem "pg"
 end
