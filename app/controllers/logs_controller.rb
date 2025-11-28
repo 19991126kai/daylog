@@ -31,6 +31,7 @@ class LogsController < ApplicationController
     if @log.save
       redirect_to timer_path(category_id: @log.category_id), notice: "ログを作成しました"
     else
+      flash.now[:alert] = "作成に失敗しました。入力内容をご確認ください。"
       render :new, status: :unprocessable_content
     end
   end
@@ -49,8 +50,9 @@ class LogsController < ApplicationController
     @log.assign_attributes(log_params)
     @log.duration = total_minutes
     if @log.save
-      redirect_to timer_path(category_id: @log.category_id), notice: "ログを編集しました"
+      redirect_to timer_path(category_id: @log.category_id), notice: "ログを更新しました"
     else
+      flash.now[:alert] = "更新に失敗しました。入力内容をご確認ください。"
       render :edit, status: :unprocessable_entity
     end
   end
@@ -58,7 +60,7 @@ class LogsController < ApplicationController
   def destroy
     @log = current_user.logs.find(params[:id])
     @log.destroy
-    redirect_to request.referrer || root_path
+    redirect_to (request.referrer || root_path), notice: "ログを削除しました"
   end
 
   private
