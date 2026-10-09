@@ -36,6 +36,12 @@
     <% if use_header %>
       <%= render "layouts/header" %>
       <main>
+        <% flash.each do |key, message| %>
+            <% color = key == "notice" ? "bg-green-400" : "bg-red-400" %>
+            <div class="text-white px-4 py-2 mb-4 <%= color %>">
+              <%= message %>
+            </div>
+          <% end %>
         <%= yield %>
       </main>
 
@@ -95,6 +101,14 @@
         <!-- メイン（PCはサイドバー分オフセット、モバイルはバー高さ分スペーサー） -->
         <main class="flex-1 w-full md:ml-64">
           <div class="md:hidden h-14"></div>
+
+          <% flash.each do |key, message| %>
+            <% color = key == "notice" ? "bg-green-400" : "bg-red-400" %>
+            <div class="text-white px-4 py-2 mb-4 <%= color %>">
+              <%= message %>
+            </div>
+          <% end %>
+
           <div class="mx-auto max-w-6xl p-6 md:p-8">
             <%= yield %>
           </div>
